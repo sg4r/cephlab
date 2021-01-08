@@ -109,4 +109,146 @@ For more information see:
 	https://docs.ceph.com/docs/master/mgr/telemetry/
 
 Bootstrap complete.
+
+#Add ssh key
+[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cn2
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/etc/ceph/ceph.pub"
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@cn2'"
+and check to make sure that only the key(s) you wanted were added.
+[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cn3
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/etc/ceph/ceph.pub"
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@cn3'"
+and check to make sure that only the key(s) you wanted were added.
+[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cn4
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/etc/ceph/ceph.pub"
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@cn4'"
+and check to make sure that only the key(s) you wanted were added.
+
+# connexion au cluster ceph
+[vagrant@cn1 ~]$ sudo ./cephadm shell 
+Using recent ceph image docker.io/ceph/ceph:v15
+# on passe dans le contenaire. Remarque: attention au changement de shell en [ceph: root@cn1 /]
+[ceph: root@cn1 /]# ceph -s
+  cluster:
+    id:     c9eacd34-513d-11eb-9233-5254009e5678
+    health: HEALTH_WARN
+            OSD count 0 < osd_pool_default_size 3
+ 
+  services:
+    mon: 1 daemons, quorum cn1 (age 2m)
+    mgr: cn1.erhuht(active, since 96s)
+    osd: 0 osds: 0 up, 0 in
+ 
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 B
+    usage:   0 B used, 0 B / 0 B avail
+    pgs:     
+# Remarque : Le cluster est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va règler cela rapidement
+
+# liste des nodes dans le cluster. On retrouve bien les 4 nodes
+[ceph: root@cn1 /]# ceph orch host ls
+HOST  ADDR  LABELS  STATUS  
+cn1   cn1                   
+cn2   cn2                   
+cn3   cn3                   
+cn4   cn4                   
+
+# l'ajout des nodes va augmenter automatiquement le nombre de process dans le cluster.
+[ceph: root@cn1 /]# ceph orch ls
+NAME           RUNNING  REFRESHED  AGE  PLACEMENT  IMAGE NAME                            IMAGE ID      
+alertmanager       1/1  2m ago     10m  count:1    docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
+crash              2/4  2m ago     10m  *          docker.io/ceph/ceph:v15               5553b0cb212c  
+grafana            1/1  2m ago     10m  count:1    docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                2/2  2m ago     10m  count:2    docker.io/ceph/ceph:v15               5553b0cb212c  
+mon                1/5  2m ago     10m  count:5    docker.io/ceph/ceph:v15               5553b0cb212c  
+node-exporter      2/4  2m ago     10m  *          docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+prometheus         1/1  2m ago     10m  count:1    docker.io/prom/prometheus:v2.18.1     de242295e225  
+
+# au bout de 3 minutes, on retrouve bien 4/4 service crash, 3/5 mon, 4/4 node-exporter 
+[ceph: root@cn1 /]# ceph orch ls
+NAME           RUNNING  REFRESHED  AGE  PLACEMENT  IMAGE NAME                            IMAGE ID      
+alertmanager       1/1  -          12m  count:1    <unknown>                             <unknown>     
+crash              4/4  13s ago    12m  *          mix                                   mix           
+grafana            1/1  10s ago    12m  count:1    docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                2/2  12s ago    12m  count:2    mix                                   mix           
+mon                3/5  12s ago    12m  count:5    mix                                   mix           
+node-exporter      4/4  13s ago    12m  *          docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+prometheus         1/1  -          12m  count:1    <unknown>                             <unknown>     
+
+# le cluster Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
+[ceph: root@cn1 /]# ceph -s
+  cluster:
+    id:     c9eacd34-513d-11eb-9233-5254009e5678
+    health: HEALTH_WARN
+            OSD count 0 < osd_pool_default_size 3
+ 
+  services:
+    mon: 3 daemons, quorum cn1,cn2,cn4 (age 2m)
+    mgr: cn1.erhuht(active, since 13m), standbys: cn2.jnqrhu
+    osd: 0 osds: 0 up, 0 in
+ 
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 B
+    usage:   0 B used, 0 B / 0 B avail
+    pgs:
+         
+# ajoutton les disques, pour cela on peux deja lister l'ensemble des disques libres existant
+[ceph: root@cn1 /]# ceph orch device ls
+Hostname  Path      Type  Serial  Size   Health   Ident  Fault  Available  
+cn1       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
+cn1       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes        
+cn2       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
+cn2       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes        
+cn3       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
+cn3       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes        
+cn4       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
+cn4       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes        
+
+# une commande pour ajouter tous les disques libres, c'est magique ;)
+[ceph: root@cn1 /]# ceph orch apply osd --all-available-devices
+Scheduled osd.all-available-devices update...
+
+[ceph: root@cn1 /]# ceph osd df
+ID  CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP  META   AVAIL    %USE  VAR   PGS  STATUS
+ 3    hdd  0.03909   1.00000   40 GiB  1.0 GiB    3 MiB   0 B  1 GiB   39 GiB  2.51  1.13    0      up
+ 7    hdd  0.04880   1.00000   50 GiB  1.0 GiB    3 MiB   0 B  1 GiB   49 GiB  2.01  0.90    1      up
+ 2    hdd  0.03909   1.00000   40 GiB  1.0 GiB    3 MiB   0 B  1 GiB   39 GiB  2.51  1.13    1      up
+ 6    hdd  0.04880   1.00000   50 GiB  1.0 GiB    3 MiB   0 B  1 GiB   49 GiB  2.01  0.90    0      up
+ 1    hdd  0.03909   1.00000   40 GiB  1.0 GiB    3 MiB   0 B  1 GiB   39 GiB  2.51  1.13    0      up
+ 5    hdd  0.04880   1.00000   50 GiB  1.0 GiB    3 MiB   0 B  1 GiB   49 GiB  2.01  0.90    0      up
+ 0    hdd  0.03909   1.00000   40 GiB  1.0 GiB  2.9 MiB   0 B  1 GiB   39 GiB  2.51  1.12    1      up
+ 4    hdd  0.04880   1.00000   50 GiB  1.0 GiB    3 MiB   0 B  1 GiB   49 GiB  2.01  0.90    0      up
+                       TOTAL  360 GiB  8.0 GiB   24 MiB   0 B  8 GiB  352 GiB  2.23                   
+MIN/MAX VAR: 0.90/1.13  STDDEV: 0.25
+[ceph: root@cn1 /]# 
+[ceph: root@cn1 /]# ceph -s
+  cluster:
+    id:     c9eacd34-513d-11eb-9233-5254009e5678
+    health: HEALTH_OK
+ 
+  services:
+    mon: 3 daemons, quorum cn1,cn2,cn4 (age 4m)
+    mgr: cn1.erhuht(active, since 16m), standbys: cn2.jnqrhu
+    osd: 8 osds: 8 up (since 19s), 8 in (since 19s)
+ 
+  task status:
+ 
+  data:
+    pools:   1 pools, 1 pgs
+    objects: 0 objects, 0 B
+    usage:   8.0 GiB used, 352 GiB / 360 GiB avail
+    pgs:     1 active+clean
+
+
 ```
