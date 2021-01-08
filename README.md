@@ -25,6 +25,9 @@ vagrant ssh cn1
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i dnf install -y podman; done
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i systemctl stop firewalld.service; done
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i systemctl disable firewalld.service; done
+```
+## Installtion du clusteur Ceph avec cephadm
+```
 [vagrant@cn1 ~]$ curl --silent --remote-name --location https://github.com/ceph/ceph/raw/octopus/src/cephadm/cephadm
 [vagrant@cn1 ~]$ chmod +x cephadm
 [vagrant@cn1 ~]$ sudo mkdir -p /etc/ceph
@@ -136,7 +139,7 @@ and check to make sure that only the key(s) you wanted were added.
 # connexion au cluster ceph
 [vagrant@cn1 ~]$ sudo ./cephadm shell 
 Using recent ceph image docker.io/ceph/ceph:v15
-# on passe dans le contenaire. Remarque: attention au changement de shell en [ceph: root@cn1 /]
+# Remarque  : on passe dans le contenaire. Attention au changement de shell en [ceph: root@cn1 /]
 [ceph: root@cn1 /]# ceph -s
   cluster:
     id:     c9eacd34-513d-11eb-9233-5254009e5678
@@ -153,9 +156,10 @@ Using recent ceph image docker.io/ceph/ceph:v15
     objects: 0 objects, 0 B
     usage:   0 B used, 0 B / 0 B avail
     pgs:     
-# Remarque : Le cluster est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va règler cela rapidement
+# Remarque : Le clusteur est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va règler cela rapidement
+# Ajouter les nodes supplémentaire au cluster Ceph
 
-# liste des nodes dans le cluster. On retrouve bien les 4 nodes
+# liste des nodes dans le clusteur. On retrouve bien les 4 nodes
 [ceph: root@cn1 /]# ceph orch host ls
 HOST  ADDR  LABELS  STATUS  
 cn1   cn1                   
@@ -163,7 +167,7 @@ cn2   cn2
 cn3   cn3                   
 cn4   cn4                   
 
-# l'ajout des nodes va augmenter automatiquement le nombre de process dans le cluster.
+# l'ajout des nodes va augmenter automatiquement le nombre de process dans le clusteur.
 [ceph: root@cn1 /]# ceph orch ls
 NAME           RUNNING  REFRESHED  AGE  PLACEMENT  IMAGE NAME                            IMAGE ID      
 alertmanager       1/1  2m ago     10m  count:1    docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
@@ -185,7 +189,7 @@ mon                3/5  12s ago    12m  count:5    mix                          
 node-exporter      4/4  13s ago    12m  *          docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
 prometheus         1/1  -          12m  count:1    <unknown>                             <unknown>     
 
-# le cluster Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
+# le clusteur Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
 [ceph: root@cn1 /]# ceph -s
   cluster:
     id:     c9eacd34-513d-11eb-9233-5254009e5678
@@ -203,7 +207,7 @@ prometheus         1/1  -          12m  count:1    <unknown>                    
     usage:   0 B used, 0 B / 0 B avail
     pgs:
          
-# ajoutton les disques, pour cela on peux deja lister l'ensemble des disques libres existant
+# ajoutons des disques au clusteur, mais avant cela on peux lister l'ensemble des disques libres éxistant
 [ceph: root@cn1 /]# ceph orch device ls
 Hostname  Path      Type  Serial  Size   Health   Ident  Fault  Available  
 cn1       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
@@ -215,10 +219,11 @@ cn3       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes
 cn4       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
 cn4       /dev/vdc  hdd           53.6G  Unknown  N/A    N/A    Yes        
 
-# une commande pour ajouter tous les disques libres, c'est magique ;)
+# une commande pour ajouter tous les disques libres, c'est pratique ;)
 [ceph: root@cn1 /]# ceph orch apply osd --all-available-devices
 Scheduled osd.all-available-devices update...
 
+# vérification des disques utilisé par le clusteur
 [ceph: root@cn1 /]# ceph osd df
 ID  CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP  META   AVAIL    %USE  VAR   PGS  STATUS
  3    hdd  0.03909   1.00000   40 GiB  1.0 GiB    3 MiB   0 B  1 GiB   39 GiB  2.51  1.13    0      up
@@ -231,7 +236,7 @@ ID  CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP  META   AVAIL    %
  4    hdd  0.04880   1.00000   50 GiB  1.0 GiB    3 MiB   0 B  1 GiB   49 GiB  2.01  0.90    0      up
                        TOTAL  360 GiB  8.0 GiB   24 MiB   0 B  8 GiB  352 GiB  2.23                   
 MIN/MAX VAR: 0.90/1.13  STDDEV: 0.25
-[ceph: root@cn1 /]# 
+# vérifiont le status du cluster. c'est ok, on a bien 8 osds dans le cluster avec 4 nodes.
 [ceph: root@cn1 /]# ceph -s
   cluster:
     id:     c9eacd34-513d-11eb-9233-5254009e5678
@@ -250,5 +255,10 @@ MIN/MAX VAR: 0.90/1.13  STDDEV: 0.25
     usage:   8.0 GiB used, 352 GiB / 360 GiB avail
     pgs:     1 active+clean
 
-
 ```
+## connexion au dashbord du cluster Ceph
+retrouvez vos informations de connexoins fournit lors de l'initialisation du cluster , et utilisez un navigateur pour vous connecter a l'adresse https://192.168.0.11:8443
+saisir le compte admin et le mot de passe associer. il faudra changer le mot de passe par defaut a la premiere connexion.
+
+
+
