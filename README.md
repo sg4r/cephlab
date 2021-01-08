@@ -259,6 +259,7 @@ MIN/MAX VAR: 0.90/1.13  STDDEV: 0.25
 ## connexion au dashbord du cluster Ceph
 retrouvez vos informations de connexoins fournit lors de l'initialisation du cluster , et utilisez un navigateur pour vous connecter a l'adresse https://192.168.0.11:8443
 saisir le compte admin et le mot de passe associer. il faudra changer le mot de passe par defaut a la premiere connexion.
-
+Voici une copie d'ecran du dashboard de ceph octopus
+![ceph-dashboard](ceph-dashboard.png)
 
 
