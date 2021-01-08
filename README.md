@@ -6,9 +6,10 @@ sudo apt-get install virt-manager
 sudo apt install vagrant
 ```
 ## Clone ceph-octopus labs
+```
 git clone https://github.com/sg4r/ceph-octopus.git
 cd ceph-octopus
-
+```
 ## Start labs
 ```
 #start all Vms 
@@ -16,7 +17,7 @@ vagrant up
 #status des Vms
 vagrant status
 ```
-## Préparation de la configuration des node du cluster Ceph.
+## Préparation de la configuration des nodes du cluster Ceph.
 ```
 #connexion au premier node
 vagrant ssh cn1
