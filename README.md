@@ -28,7 +28,7 @@ vagrant ssh cn1
 ```
 ## Installtion du clusteur Ceph avec cephadm
 ```
-[vagrant@cn1 ~]$ curl --silent --remote-name --location https://github.com/ceph/ceph/raw/octopus/src/cephadm/cephadm
+[vagrant@cn1 ~]$ curl --silent --remote-name --location https://raw.githubusercontent.com/ceph/ceph/octopus/src/cephadm/cephadm
 [vagrant@cn1 ~]$ chmod +x cephadm
 [vagrant@cn1 ~]$ sudo mkdir -p /etc/ceph
 [vagrant@cn1 ~]$ sudo ./cephadm bootstrap --mon-ip 192.168.0.11
