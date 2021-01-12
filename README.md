@@ -29,6 +29,6 @@ vagrant ssh cn1
 ## Etapes
 différentes étapes
 * [Création du cluster Ceph](cephcreate.md)
-* Stockage RBD
+* [Stockage RBD](cephrbd.md)
 * Stockage CephFS
 * Stockage S3
