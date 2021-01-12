@@ -311,8 +311,57 @@ Le snapshot permet de revenir à une version stable sur l’ensemble du disque. 
 clone pour récupérer seulement quelques éléments depuis un snapshot. Par exemple certains fichiers d’un
 utilisateur, mais pas de tous les utilisateurs...
 ## Gestion des clones
+Ceph offre la possibilité de créer de nombreux clones depuis un snapshot afin d’obtenir rapidement des images à
+partir d'une version de référence. Un clone est une copie à l'écriture (COW) d'un instantané qui fait référence, donc
+pour éviter tout désastre vous devez protéger cet instantané avant de le cloner.
 ```
-# a faire
+[root@cephclt ~]# rbd -n client.prbd snap protect prbd/foo@snapv1
+# Vous ne pouvez plus supprimer un instantané protégé.
+
+[root@cephclt ~]# cat /mnt/rbd/fichier.txt
+version1
+# modification du fichier
+[root@cephclt ~]# echo version2 >>/mnt/rbd/fichier.txt 
+[root@cephclt ~]# rbd -n client.prbd clone prbd/foo@snapv1 prbd/fooclone
+[root@cephclt ~]# mkdir /opt/fooclone
+[root@cephclt ~]# rbd -n client.prbd map prbd/fooclone
+/dev/rbd2
+[root@cephclt ~]# mount -t xfs -o rw,nouuid /dev/rbd/prbd/fooclone /opt/fooclone
+[root@cephclt ~]# cat /opt/fooclone/fichier.txt
+version1
+# On retrouve la version initial du fichier
+[root@cephclt ~]# echo version3>> /opt/fooclone/fichier.txt
+[root@cephclt ~]# cat /opt/fooclone/fichier.txt
+version1
+version3
+# il est même modifiable
+
+#liste des clones d'un snapshot
+[root@cephclt ~]# rbd -n client.prbd children prbd/foo@snapv1
+prbd/fooclone
+#suppression d’un snap
+[root@cephclt ~]# rbd -n client.prbd snap rm prbd/foo@snapv1
+Removing snap: 0% complete...failed.
+rbd: snapshot 'snapv1' is protected from removal.
+2021-01-12T16:10:49.449+0000 7fcc4ef3f500 -1 librbd::Operations: snapshot is protected
+# pour faire un clone, il faut protéger le snapshot contre sa suppresion ;)
+[root@cephclt ~]# umount /opt/fooclone/
+[root@cephclt ~]# rbd -n client.prbd unmap prbd/fooclone
+[root@cephclt ~]# rbd -n client.prbd snap unprotect prbd/foo@snapv1
+2021-01-12T16:11:32.107+0000 7f95927fc700 -1 librbd::SnapshotUnprotectRequest: cannot unprotect: at least 1 child(ren) [aca63043ec89] in pool 'prbd'
+[...]
+(16) Device or resource busy
+# Normal, il reste un clone a ce snapshot
+[root@cephclt ~]# rbd -n client.prbd rm prbd/fooclone
+Removing image: 100% complete...done.
+[root@cephclt ~]# rbd -n client.prbd snap unprotect prbd/foo@snapv1
+[root@cephclt ~]# rbd -n client.prbd snap rm prbd/foo@snapv1
+Removing snap: 100% complete...done.
+# Et voila ;)
+
+#purger tous les snap d'une image
+[root@cephclt ~]# rbd -n client.prbd snap purge prbd/foo
+[root@cephclt ~]# 
 ```
 ## Documentation
 Pour plus d’informations voir https://docs.ceph.com/en/latest/rbd/
