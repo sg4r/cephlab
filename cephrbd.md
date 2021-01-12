@@ -180,3 +180,5 @@ foo-ec   5 GiB            2
 ```
 # a faire
 ```
+## Documentation
+Pour plus d’informations voir https://docs.ceph.com/docs/master/rbd/
