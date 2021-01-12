@@ -118,7 +118,8 @@ ceph.client.prbd.keyring                                                    100%
 ```
 [vagrant@cn1 ~]$ ssh root@cephclt
 Last login: Tue Jan 12 07:20:12 2021 from 192.168.0.11
-[root@cephclt ~]# 
+# montage image rbd (réplication)
+[root@cephclt ~]# mkdir /mnt/rbd
 [root@cephclt ~]# rbd -n client.prbd device map prbd/foo
 /dev/rbd0
 [root@cephclt ~]# rbd -n client.prbd device ls
@@ -137,14 +138,14 @@ log      =internal log           bsize=4096   blocks=2560, version=2
 realtime =none                   extsz=4096   blocks=0, rtextents=0
 Discarding blocks...Done.
 
-[root@cephclt ~]# mount /dev/rbd0 /mnt
-[root@cephclt ~]# df -h /mnt
+[root@cephclt ~]# mount /dev/rbd0 /mnt/rbd
+[root@cephclt ~]# df -h /mnt/rbd
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/rbd0       5.0G   69M  5.0G   2% /mnt
+/dev/rbd0       5.0G   69M  5.0G   2% /mnt/rbd
 
 [root@cephclt ~]# rbd -n client.prbd resize --size 10G prbd/foo
 Resizing image: 100% complete...done.
-[root@cephclt ~]# xfs_growfs /mnt
+[root@cephclt ~]# xfs_growfs /mnt/rbd
 meta-data=/dev/rbd0              isize=512    agcount=8, agsize=163840 blks
          =                       sectsz=512   attr=2, projid32bit=1
          =                       crc=1        finobt=1, sparse=1, rmapbt=0
@@ -156,9 +157,9 @@ log      =internal log           bsize=4096   blocks=2560, version=2
          =                       sectsz=512   sunit=16 blks, lazy-count=1
 realtime =none                   extsz=4096   blocks=0, rtextents=0
 data blocks changed from 1310720 to 2621440
-[root@cephclt ~]# df -h /mnt
+[root@cephclt ~]# df -h /mnt/rbd
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/rbd0        10G  105M  9.9G   2% /mnt
+/dev/rbd0        10G  105M  9.9G   2% /mnt/rbd
 
 [root@cephclt ~]# rbd -n client.prbd ls -l prbd
 NAME    SIZE    PARENT  FMT  PROT  LOCK
@@ -167,11 +168,60 @@ foo-ec   5 GiB            2
 
 # Remarque : il y a un verrou sur l’image pour éviter qu’un autre client ne monte une image déjà utilisée, ceci afin d’éviter de corrompre les données.
 
-# Démontage de l’image
-[root@cephclt ~]# umount /mnt
-[root@cephclt ~]# rbd -n client.prbd device unmap prbd/foo
-```
+# montage image rbdec (erasure code)
+[root@cephclt ~]# mkdir /mnt/rbdec
+[root@cephclt ~]# rbd -n client.prbd device map prbd/foo-ec
+/dev/rbd1
+# remarque: on indique seulement le nom de l'image. pas besion d'indiquer le nom du pool ec pour les datas
+[root@cephclt ~]# rbd -n client.prbd device ls
+id  pool  namespace  image   snap  device   
+0   prbd             foo     -     /dev/rbd0
+1   prbd             foo-ec  -     /dev/rbd1
+[root@cephclt ~]# mkfs.xfs /dev/rbd/prbd/foo-ec 
+meta-data=/dev/rbd/prbd/foo-ec   isize=512    agcount=8, agsize=163840 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1
+data     =                       bsize=4096   blocks=1310720, imaxpct=25
+         =                       sunit=16     swidth=16 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=16 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+Discarding blocks...Done.
+[root@cephclt ~]# mount /dev/rbd1 /mnt/rbdec/
+[root@cephclt ~]#  df -h /mnt/rbdec/
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/rbd1       5.0G   69M  5.0G   2% /mnt/rbdec
+[root@cephclt ~]# rbd -n client.prbd resize --size 10G prbd/foo-ec
+Resizing image: 100% complete...done.
+[root@cephclt ~]# xfs_growfs /mnt/rbdec
+meta-data=/dev/rbd1              isize=512    agcount=8, agsize=163840 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1
+data     =                       bsize=4096   blocks=1310720, imaxpct=25
+         =                       sunit=16     swidth=16 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=16 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 1310720 to 2621440
+[root@cephclt ~]# df -h /mnt/rbdec
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/rbd1        10G  105M  9.9G   2% /mnt/rbdec
+[root@cephclt ~]# rbd -n client.prbd ls -l prbd
+NAME    SIZE    PARENT  FMT  PROT  LOCK
+foo     10 GiB            2        excl
+foo-ec  10 GiB            2        excl
 
+# Démontage des  images
+[root@cephclt ~]# umount /mnt/rbd
+[root@cephclt ~]# rbd -n client.prbd device unmap prbd/foo
+[root@cephclt ~]# umount /mnt/rbdec
+[root@cephclt ~]# rbd -n client.prbd device unmap prbd/foo-ec
+[root@cephclt ~]# rbd -n client.prbd device ls
+```
 ## Montage des images RBD au démarrage du système
 ```
 # a faire
