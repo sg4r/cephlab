@@ -83,7 +83,7 @@ prbdec                  3   32    8 KiB        1  256 KiB      0    166 GiB
 exit
 ```
 ## préparer le client
-Il est nécéssaire installer les binnaires de Ceph sur le client ainsi que les fichiers de configuration pour joindre le cluster Ceph.
+Il est nécéssaire installer les binaires de Ceph sur le client ainsi que les fichiers de configuration pour joindre le cluster Ceph.
 ```
 # créé la clé pour le client pour l'acces au pool prbd
 [vagrant@cn1 ~]$ sudo ./cephadm shell ceph auth get-or-create client.prbd mon 'profile rbd' osd 'profile rbd pool=prbd, profile rbd pool=prbdec' > ceph.client.prbd.keyring
