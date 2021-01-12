@@ -223,8 +223,53 @@ foo-ec  10 GiB            2        excl
 [root@cephclt ~]# rbd -n client.prbd device ls
 ```
 ## Montage des images RBD au démarrage du système
+rbdmap est un script shell qui automatise les opérations rbd map et rbd unmap des images RBD pour un montage
+automatique au démarrage ou pour le démontage à l’arrêt du système. La configuration du service rbdmap.service
+pour systemd est fournie avec le paquetage ceph-common.
+Le script shell accepte un argument unique, qui peut être map ou unmap. La configuration des images est définie
+dans /etc/ceph/rbdmap.
 ```
-# a faire
+# modifier le fichier /etc/ceph/rbdmap
+[root@cephclt ~]# cat /etc/ceph/rbdmap
+# RbdDevice		Parameters
+#poolname/imagename	id=client,keyring=/etc/ceph/ceph.client.keyring
+prbd/foo id=prbd,keyring=/etc/ceph/ceph.client.prbd.keyring
+prbd/foo-ec id=prbd,keyring=/etc/ceph/ceph.client.prbd.keyring
+[root@cephclt ~]# rbdmap map
+# vérification : les devices sont bien montés
+[root@cephclt ~]# rbd device ls
+id  pool  namespace  image   snap  device   
+0   prbd             foo     -     /dev/rbd0
+1   prbd             foo-ec  -     /dev/rbd1
+[root@cephclt ~]# rbdmap unmap
+[root@cephclt ~]# rbd device ls
+[root@cephclt ~]#
+[root@cephclt ~]# systemctl enable rbdmap
+Created symlink /etc/systemd/system/multi-user.target.wants/rbdmap.service → /usr/lib/systemd/system/rbdmap.service.
+[root@cephclt ~]# systemctl start rbdmap
+[root@cephclt ~]# echo /dev/rbd/prbd/foo /mnt/rbd xfs noauto 0 0 >>/etc/fstab
+[root@cephclt ~]# echo /dev/rbd/prbd/foo-ec /mnt/rbdec xfs noauto 0 0 >>/etc/fstab
+# vérification
+[root@cephclt ~]# rbdmap unmap
+[root@cephclt ~]# rbdmap map
+[root@cephclt ~]# df -h |grep mnt
+/dev/rbd0                     10G  105M  9.9G   2% /mnt/rbd
+/dev/rbd1                     10G  105M  9.9G   2% /mnt/rbdec
+# si le montage fonctionne, alors on peut tester via un reboot
+[root@cephclt ~]# reboot
+Connection to cephclt closed by remote host.
+Connection to cephclt closed.
+[vagrant@cn1 ~]$ 
+# reconnexion à la vm cephclt
+[vagrant@cn1 ~]$ ssh root@cephclt
+Last login: Tue Jan 12 13:13:01 2021 from 192.168.0.11
+# Vérification du montage automatique
+[root@cephclt ~]# df -h |grep mnt
+/dev/rbd0                     10G  105M  9.9G   2% /mnt/rbd
+/dev/rbd1                     10G  105M  9.9G   2% /mnt/rbdec
+# Yes ca marche ;)
+
+
 ```
 ## Gestion des snapshots
 ```
