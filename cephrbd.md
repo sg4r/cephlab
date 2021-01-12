@@ -235,4 +235,4 @@ foo-ec  10 GiB            2        excl
 # a faire
 ```
 ## Documentation
-Pour plus d’informations voir https://docs.ceph.com/docs/master/rbd/
+Pour plus d’informations voir https://docs.ceph.com/en/latest/rbd/
