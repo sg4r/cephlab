@@ -268,13 +268,48 @@ Last login: Tue Jan 12 13:13:01 2021 from 192.168.0.11
 /dev/rbd0                     10G  105M  9.9G   2% /mnt/rbd
 /dev/rbd1                     10G  105M  9.9G   2% /mnt/rbdec
 # Yes ca marche ;)
-
-
 ```
 ## Gestion des snapshots
+Un instantané est une copie en lecture seule de l'état d'une image à un moment donné. Il est ainsi possible de
+conserver un historique de l'état d'une image en fonction du temps.
+Avec XFS, il est nécessaire d’utiliser xfs_freeze pour garantir un état cohérent du système de fichiers pendant la
+création du snapshot. Ceci a pour effet de vider les caches et de bloquer les modifications du système de fichiers
+pendant la durée de création du snapshot.
+
 ```
-# a faire
+[root@cephclt ~]# echo version1 >>/mnt/rbd/fichier.txt
+[root@cephclt ~]# xfs_freeze -f /mnt/rbd
+[root@cephclt ~]# rbd -n client.prbd snap create prbd/foo@snapv1
+[root@cephclt ~]# xfs_freeze -u /mnt/rbd
+[root@cephclt ~]# rbd -n client.prbd snap ls prbd/foo
+SNAPID  NAME    SIZE    PROTECTED  TIMESTAMP               
+     4  snapv1  10 GiB             Tue Jan 12 13:35:28 2021
+[root@cephclt ~]# echo version2 >>/mnt/rbd/fichier.txt
+[root@cephclt ~]# cat /mnt/rbd/fichier.txt
+version1
+version2
+
+# retour a l'état initiale
+[root@cephclt ~]# rbd -n client.prbd status prbd/foo
+Watchers:
+	watcher=192.168.0.10:0/862625393 client.44190 cookie=18446462598732840961
+[root@cephclt ~]# rbdmap unmap
+[root@cephclt ~]# rbd -n client.prbd snap rollback prbd/foo@snapv1
+Rolling back to snapshot: 100% complete...done.
+[root@cephclt ~]# rbdmap map
+[root@cephclt ~]# cat /mnt/rbd/fichier.txt
+version1
+[root@cephclt ~]# 
+# Yep c'est ok ;)
 ```
+Remarque : Un retour à l'état initial d’un snapshot revient à écraser la version actuelle de l'image avec les données
+d'un instantané. Le temps nécessaire à l'exécution d'un retour à l'état initial augmente avec la taille de l'image. Il est
+plus rapide de cloner une image à partir d'un instantané que de rétablir une image vers un instantané.
+Pour éviter de perdre toutes les modifications avant le rollback, il est conseillé de faire un snapshot avant le
+démontage de l'image.
+Le snapshot permet de revenir à une version stable sur l’ensemble du disque. Préférez l’utilisation de la fonction
+clone pour récupérer seulement quelques éléments depuis un snapshot. Par exemple certains fichiers d’un
+utilisateur, mais pas de tous les utilisateurs...
 ## Gestion des clones
 ```
 # a faire
