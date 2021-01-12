@@ -2,11 +2,13 @@ Le système de stockage en mode bloc de Ceph permet de monter une image RBD (RAD
 périphérique de type bloc. Quand une application écrit des données sur Ceph en utilisant un périphérique de bloc,
 Ceph entrelace et réplique les données à travers le cluster automatiquement. Ceph RBD est généralement utilisé
 pour les disques de machines virtuelles.
-La commande rbd vous permet de créer, d’afficher ou de modifier les informations et de supprimer des images RBD.
+![ceph-dashboard](https://docs.ceph.com/en/latest/_images/274b3a8c6be03027e4cbcc949e348d05010b41856c98f7a97992ff7bacfc27da.png)
+
+La commande **rbd** vous permet de créer, d’afficher ou de modifier les informations et de supprimer des images RBD.
 Vous pouvez également l'utiliser pour la gestion des snapshots ou des fonctions de clonage des images.
 
 ```
-# creation du pool prbd en mode réplication
+# création du pool prbd en mode réplication
 [ceph: root@cn1 /]# ceph osd pool create prbd 16          
 pool 'prbd' created
 
@@ -80,8 +82,8 @@ prbdec                  3   32    8 KiB        1  256 KiB      0    166 GiB
 [ceph: root@cn1 /]# exit
 exit
 ```
-## prépare le client
-
+## préparer le client
+Il est nécéssaire installer les binnaires de Ceph sur le client ainsi que les fichiers de configuration pour joindre le cluster Ceph.
 ```
 # créé la clé pour le client pour l'acces au pool prbd
 [vagrant@cn1 ~]$ sudo ./cephadm shell ceph auth get-or-create client.prbd mon 'profile rbd' osd 'profile rbd pool=prbd, profile rbd pool=prbdec' > ceph.client.prbd.keyring
@@ -93,13 +95,14 @@ Using recent ceph image docker.io/ceph/ceph:v15
 [client.prbd]
 	key = AQCnx/xfhTjDDhAAis6rFEStxGIdORJ+TVpCig==
 
+# remarque: la clé ne doit être accessible qu'a ceph. Dans ce TP on bypass quelques rêgles de sécuritées et d'isolation ;)
 # install repo ceph-octopus
 [vagrant@cn1 ~]$ ssh root@cephclt dnf install centos-release-ceph-octopus.noarch
 The authenticity of host 'cephclt (192.168.0.10)' can't be established.
 RSA key fingerprint is SHA256:wJMZR1dtOjr0FNdEGJ7Lgg9f14+YDIUp+RbCvq3xQwM.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 Warning: Permanently added 'cephclt,192.168.0.10' (RSA) to the list of known hosts.
-# install binnaire sur le client
+# install binaire sur le client
 [vagrant@cn1 ~]$ ssh root@cephclt dnf install ceph-common
 # vérifie ceph.conf
 [vagrant@cn1 ~]$ ls /etc/ceph
