@@ -1,5 +1,7 @@
 # Cephadmin
 cephadm est un outils pour déployer et gèrer un cluster Ceph par connexion aux hôtes à partir du démon gestionnaire via SSH. il permet d'ajouter, supprimer ou mettre à jour des conteneurs de démons Ceph. Il ne repose pas sur des outils de configuration ou d'orchestration externes comme Ansible, Rook ou Salt.
+
+cephadm est le nouvel outil de gestion d'un cluster Ceph fournit a partir de la version Octopus v15.2.0 et ne prend pas en charge les anciennes versions de Ceph. Il est possible de migrer les anciennes instance vers cephadmin. cephadmin remplace ceph-deploy utilisé dans les anciennes version de Ceph.
 ## Installtion du clusteur Ceph avec cephadm
 ```
 [vagrant@cn1 ~]$ curl --silent --remote-name --location https://raw.githubusercontent.com/ceph/ceph/octopus/src/cephadm/cephadm
