@@ -1,3 +1,5 @@
+# Cephadmin
+cephadm est un outils pour déployer et gèrer un cluster Ceph par connexion aux hôtes à partir du démon gestionnaire via SSH. il permet d'ajouter, supprimer ou mettre à jour des conteneurs de démons Ceph. Il ne repose pas sur des outils de configuration ou d'orchestration externes comme Ansible, Rook ou Salt.
 ## Installtion du clusteur Ceph avec cephadm
 ```
 [vagrant@cn1 ~]$ curl --silent --remote-name --location https://raw.githubusercontent.com/ceph/ceph/octopus/src/cephadm/cephadm
@@ -300,7 +302,7 @@ ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
 
 # Remarque : Le cluster est maintenant ok, et prets pour la configuration des pools
 ```
-## connexion au dashbord du cluster Ceph
+## connexion au dashboard du cluster Ceph
 retrouvez vos informations de connexoins fournit lors de l'initialisation du cluster , et utilisez un navigateur pour vous connecter a l'adresse https://192.168.0.11:8443
 saisir le compte admin et le mot de passe associer. il faudra changer le mot de passe par defaut a la premiere connexion.
 Voici une copie d'ecran du dashboard de ceph octopus
