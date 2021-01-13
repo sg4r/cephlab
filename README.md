@@ -30,7 +30,7 @@ vagrant ssh cn1
 guides pour les différentes étapes :
 * [Création du cluster Ceph](cephcreate.md)
 * [Stockage RBD](cephrbd.md)
-* Stockage CephFS
+* [Stockage CephFS](cephfs.md)
 * Stockage S3
 
 ## Fin de partie
