@@ -32,6 +32,7 @@ guides pour les différentes étapes :
 * [Stockage RBD](cephrbd.md)
 * [Stockage CephFS](cephfs.md)
 * [Stockage S3](cephs3.md)
+* [Ceph Dashboard](cephdashboard.md)
 
 ## Fin de partie
 Pour surrimer les vms ou simplement faire le ménage avant de refaire une partie , utiliser vagrant pour détruire toutes les vms
