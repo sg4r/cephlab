@@ -85,7 +85,13 @@ Filesystem                                             Size  Used Avail Use% Mou
 ## CephFS dans /etc/fstab
 Pour monter automatiquement CephFS au démarrage du poste client, insérer la ligne correspondante dans le fichiers /etc/fstab
 ```
-
+vi /etc/fstab
+# ajouter la ligne a la fin du fichier /etc/fstab
+192.168.0.11,192.168.0.12,192.168.0.13,192.168.0.14:/ /mnt/moncfs ceph name=cephclt,noatime,_netdev 0 2
+[root@cephclt ~]# mount -a
+[root@cephclt ~]# df -h /mnt/moncfs
+Filesystem                                             Size  Used Avail Use% Mounted on
+192.168.0.11,192.168.0.12,192.168.0.13,192.168.0.14:/  111G     0  111G   0% /mnt/moncfs
 ```
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/cephfs/
