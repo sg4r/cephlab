@@ -8,7 +8,7 @@ proprétaires, les dates de création et de modification et les ACLs. Ce pool do
 Le pool de données est utilisé par par défaut pour le stockage des données.
 Il est possible d’utiliser des pools en erasure code avec CephFS, mais il est préférable d'utiliser un pool en réplication
 pour la racine du stockage et de définir par la suite des pools en erasure code pour des répertoires spécifiques.
-
+![cephfsarchitecture](cephfs-architecture.svg)
 ## création CephFS
 Depuis la version Octopus, la création d'un CephFS se fait en une ligne de commande.
 Ceph Orchestrator créera et configurera automatiquement MDS (pour MetaData Server) pour votre système de fichiers.
@@ -51,7 +51,41 @@ cephfs.moncfs.meta      4   32  2.4 KiB       22  1.2 MiB      0    133 GiB
 cephfs.moncfs.data      5   32      0 B        0      0 B      0    111 GiB
 
 ```
-## Montage CephFS
+## Création de la clé keyring d'acces à CephFS
+le systeme client a besion du fichier /etc/ceph.conf et d'un fichier keyring pour le montage du filesystem sous CephFS.
+```
+[vagrant@cn1 ~]$ sudo ./cephadm shell ceph fs authorize moncfs client.cephclt / rw >ceph.client.cephclt.keyring
+Inferring fsid 2e90db8c-541a-11eb-bb6e-525400ae1f18
+Inferring config /var/lib/ceph/2e90db8c-541a-11eb-bb6e-525400ae1f18/mon.cn1/config
+Using recent ceph image docker.io/ceph/ceph:v15
+#vérification du contenu du fichier
+[vagrant@cn1 ~]$ cat ceph.client.cephclt.keyring
+[client.cephclt]
+	key = AQABrABgEF2WBBAAR4KYvpf0i5NGWkvMwGatTg==
+# copy du fichier sur le client
+[vagrant@cn1 ~]$ scp ./ceph.client.cephclt.keyring root@cephclt:/etc/ceph/ceph.client.cephclt.keyring
+ceph.client.cephclt.keyring                                               100%   65    24.9KB/s   00:00
+# protection des informations
+[vagrant@cn1 ~]$ ssh root@cephclt chmod -R 640 /etc/ceph
+[vagrant@cn1 ~]$ ssh root@cephclt ls -l /etc/ceph
+total 16
+-rw-r-----. 1 root root  65 Jan 14 20:47 ceph.client.cephclt.keyring
+-rw-r-----. 1 root root  62 Jan 12 07:14 ceph.client.prbd.keyring
+-rw-r-----. 1 root root 175 Jan 12 07:13 ceph.conf
+-rw-r-----. 1 root root 215 Jan 12 13:14 rbdmap
+```
+## Montage et démontage manuel CephFS
+```
+[root@cephclt ~]# mount -t ceph cn1,cn2,cn3,cn4:/ /mnt/moncfs -o name=cephclt
+[root@cephclt ~]# df -h /mnt/moncfs
+Filesystem                                             Size  Used Avail Use% Mounted on
+192.168.0.11,192.168.0.12,192.168.0.13,192.168.0.14:/  111G     0  111G   0% /mnt/moncfs
+[root@cephclt ~]# umount /mnt/moncfs
+```
+## CephFS dans /etc/fstab
+Pour monter automatiquement CephFS au démarrage du poste client, insérer la ligne correspondante dans le fichiers /etc/fstab
+```
 
+```
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/cephfs/
