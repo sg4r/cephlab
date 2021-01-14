@@ -6,8 +6,13 @@ A partir de la version Octopus, le dashboard permet des gèrer l'ensemble des fo
 ## Acces au dashboard
 Comme tous services dans Ceph, le dashboard est en mode haute disponibilité. voici une methode pour connaitre l'url de connexion par defaut :
 ```
-a completer
+[ceph: root@cn1 /]# ceph mgr services
+{
+    "dashboard": "https://cn2:8443/",
+    "prometheus": "http://cn2:9283/"
+}
 ```
+Via la commande ```ceph mgr services``` il est possible de reccupérer l'url du dashboard. 
 ## outils de métrologie
 Grafana et Prometheus peuvent être installés à l'aide de Cephadm. Ils seront automatiquement configurés par cephadm. vous retrouvez ensuite l'ensemble des métriques depuis le dasboard sans effort. Lorsque vous créé un cluster Ceph avec cephadmin, Grafana et Prometheus sont installé et configuré par défaut et sont donc directement accessible ;)
 ## Documentation
