@@ -27,7 +27,7 @@ vagrant ssh cn1
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i systemctl disable firewalld.service; done
 ```
 ## Etapes
-guides pour les différentes étapes :
+Les différentes étapes :
 * [Création du cluster Ceph](cephcreate.md)
 * [Stockage RBD](cephrbd.md)
 * [Stockage CephFS](cephfs.md)
