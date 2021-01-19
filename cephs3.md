@@ -6,6 +6,8 @@ Ceph Rados Gateway prend en charge deux interfaces:
 ## Topologie réseau
 La passerelle est accessible depuis l’internet, donc installer RadosGW sur un serveur dédié dans votre DMZ. Il est
 possible de répartir la charge avec un HAPROXY. Les flux librados seront autorisé vers le réseau publique votre cluster Ceph.
+![cephradosgw](cephradosgw.png)
+source https://qiita.com/jundo414/items/7ac3bdf3967ec67d7680
 
 ## Installation de RadosGW
 Le service RadosGW s’installe généralement sur un nœud dédié. Prévoir un CPU à 8 coeurs et entre 32Go à 64Go de
