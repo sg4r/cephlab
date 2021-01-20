@@ -87,7 +87,7 @@ Pour monter automatiquement CephFS au démarrage du poste client, insérer la li
 ```
 vi /etc/fstab
 # ajouter la ligne a la fin du fichier /etc/fstab
-192.168.0.11,192.168.0.12,192.168.0.13,192.168.0.14:/ /mnt/moncfs ceph name=cephclt,noatime,_netdev 0 2
+cn1,cn2,cn3,cn4:/ /mnt/moncfs ceph name=cephclt,noatime,_netdev 0 2
 [root@cephclt ~]# mount -a
 [root@cephclt ~]# df -h /mnt/moncfs
 Filesystem                                             Size  Used Avail Use% Mounted on
