@@ -3,6 +3,8 @@ Ceph Rados Gateway est une interface de stockage d'objets construite sur la libr
 Ceph Rados Gateway prend en charge deux interfaces:
  - S3: fournit un stockage compatible avec l'API RESTful Amazon S3.
  - Swift: fournit un stockage compatible avec l'API OpenStack Swift.
+
+![cephrgw.png](cephrgw.png)
 ## Topologie réseau
 La passerelle est accessible depuis l’internet, donc installer RadosGW sur un serveur dédié dans votre DMZ. Il est
 possible de répartir la charge avec un HAPROXY. Les flux librados seront autorisé vers le réseau publique votre cluster Ceph.
