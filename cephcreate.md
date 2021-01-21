@@ -1,8 +1,8 @@
 # Cephadmin
-cephadm est un outils pour déployer et gèrer un cluster Ceph par connexion aux hôtes à partir du démon gestionnaire via SSH. il permet d'ajouter, supprimer ou mettre à jour des conteneurs de démons Ceph. Il ne repose pas sur des outils de configuration ou d'orchestration externes comme Ansible, Rook ou Salt.
+cephadm est un outil pour déployer et gérer un cluster Ceph par connexion aux hôtes à partir du démon gestionnaire (mgr) via SSH. Il permet d'ajouter, supprimer ou mettre à jour des conteneurs de démons Ceph. Il ne repose pas sur des outils de configuration ou d'orchestration externes comme Ansible, Rook ou Salt.
 
-cephadm est le nouvel outil de gestion d'un cluster Ceph fournit a partir de la version Octopus v15.2.0 et ne prend pas en charge les anciennes versions de Ceph. Il est possible de migrer les anciennes instance vers cephadmin. cephadmin remplace ceph-deploy utilisé dans les anciennes version de Ceph.
-## Installtion du clusteur Ceph avec cephadm
+cephadm est le nouvel outil de gestion d'un cluster Ceph fourni à partir de la version Octopus v15.2.0 et ne prend pas en charge les anciennes versions de Ceph. Il est possible de migrer les anciennes instances vers cephadmin. cephadmin remplace ceph-deploy utilisé dans les anciennes version de Ceph.
+## Installation du cluster Ceph avec cephadm
 ```
 [vagrant@cn1 ~]$ curl --silent --remote-name --location https://raw.githubusercontent.com/ceph/ceph/octopus/src/cephadm/cephadm
 [vagrant@cn1 ~]$ chmod +x cephadm
@@ -89,7 +89,7 @@ For more information see:
 
 Bootstrap complete.
 
-# Votre cluster Ceph est créé. Noté bien la valeur du Password par defaut. il serra utilisé plus tard pour accéder au dashboard.
+# Votre cluster Ceph est créé. Notez bien la valeur du Password par défaut. il sera utilisé plus tard pour accéder au dashboard.
 # 
 
 # Ajout ssh ceph.pub key sur les nodes 2 à 4
@@ -101,7 +101,7 @@ Inferring fsid 2e90db8c-541a-11eb-bb6e-525400ae1f18
 Inferring config /var/lib/ceph/2e90db8c-541a-11eb-bb6e-525400ae1f18/mon.cn1/config
 Using recent ceph image docker.io/ceph/ceph:v15
 
-# Remarque  : on passe dans le contenaire. Attention au changement de shell en [ceph: root@cn1 /]
+# Remarque  : on passe dans le conteneur. Attention au changement de shell en [ceph: root@cn1 /]
 
 [ceph: root@cn1 /]#  ceph -s
   cluster:
@@ -120,13 +120,13 @@ Using recent ceph image docker.io/ceph/ceph:v15
     usage:   0 B used, 0 B / 0 B avail
     pgs:  
     
-# Remarque : Le clusteur est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va règler cela rapidement
+# Remarque : Le cluster est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va rêgler cela rapidement
 
 [ceph: root@cn1 /]# cat /etc/redhat-release 
 CentOS Linux release 8.3.2011
-# Remarque : l'OS du contenaire est basé sur CentOS Linux release 8.3.2011
+# Remarque : l'OS du conteneur est basé sur CentOS Linux release 8.3.2011
 
-# Ajouter les nodes supplémentaire au cluster Ceph
+# Ajouter les noeudes supplémentaires au cluster Ceph
 [ceph: root@cn1 /]# ceph orch host add cn2
 Added host 'cn2'
 [ceph: root@cn1 /]# ceph orch host add cn3
@@ -134,7 +134,7 @@ Added host 'cn3'
 [ceph: root@cn1 /]# ceph orch host add cn4
 Added host 'cn4'
 
-# liste des nodes dans le clusteur. On retrouve bien les 4 nodes
+# liste des noeudes dans le cluster. On retrouve bien les 4 noeudes
 [ceph: root@cn1 /]# ceph orch host ls
 HOST  ADDR  LABELS  STATUS  
 cn1   cn1                   
@@ -142,7 +142,7 @@ cn2   cn2
 cn3   cn3                   
 cn4   cn4                   
 
-# l'ajout des nodes va augmenter automatiquement le nombre de process dans le clusteur.
+# l'ajout des noeudes va augmenter automatiquement le nombre de process dans le cluster.
 [ceph: root@cn1 /]# ceph orch ls
 NAME           RUNNING  REFRESHED  AGE  PLACEMENT  IMAGE NAME                            IMAGE ID      
 alertmanager       1/1  51s ago    7m   count:1    docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
@@ -153,7 +153,7 @@ mon                1/5  51s ago    8m   count:5    docker.io/ceph/ceph:v15      
 node-exporter      1/4  51s ago    7m   *          docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
 prometheus         1/1  51s ago    7m   count:1    docker.io/prom/prometheus:v2.18.1     de242295e225  
 
-# Surveillons les modifications au niveau du Cluster 
+# Surveillons les modifications au niveau du cluster 
 [ceph: root@cn1 /]# ceph -w
   cluster:
     id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
@@ -202,7 +202,7 @@ mon                3/5  65s ago    13m  count:5    docker.io/ceph/ceph:v15      
 node-exporter      4/4  65s ago    13m  *          docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
 prometheus         1/1  63s ago    13m  count:1    docker.io/prom/prometheus:v2.18.1     de242295e225  
 
-# le clusteur Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
+# le cluster Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
 [ceph: root@cn1 /]# ceph -s
   cluster:
     id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
@@ -220,7 +220,7 @@ prometheus         1/1  63s ago    13m  count:1    docker.io/prom/prometheus:v2.
     usage:   0 B used, 0 B / 0 B avail
     pgs:     
          
-# ajoutons des disques au clusteur, mais avant cela on peux lister l'ensemble des disques libres éxistant
+# ajoutons des disques au cluster, mais avant cela listons l'ensemble des disques libres existants
 [ceph: root@cn1 /]# ceph orch device ls
 Hostname  Path      Type  Serial  Size   Health   Ident  Fault  Available  
 cn1       /dev/vdb  hdd           42.9G  Unknown  N/A    N/A    Yes        
@@ -268,7 +268,7 @@ Scheduled osd.all-available-devices update...
 2021-01-11T14:55:54.989528+0000 mon.cn1 [INF] Cluster is now healthy
 
 
-# vérification des disques utilisé par le clusteur
+# vérification des disques utilisés par le cluster
 [ceph: root@cn1 /]# ceph osd tree
 ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
 -1         0.35156  root default                            
@@ -285,7 +285,7 @@ ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
  0    hdd  0.03909          osd.0      up   1.00000  1.00000
  4    hdd  0.04880          osd.4      up   1.00000  1.00000
 
-# vérifiont le status du cluster. c'est ok, on a bien 8 osds dans le cluster avec 4 nodes.
+# vérifions le status du cluster. C'est ok, on a bien 8 osds dans le cluster avec 4 nodes.
 [ceph: root@cn1 /]# ceph -s
   cluster:
     id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
@@ -302,12 +302,12 @@ ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
     usage:   8.0 GiB used, 352 GiB / 360 GiB avail
     pgs:     1 active+clean
 
-# Remarque : Le cluster est maintenant ok, et prets pour la configuration des pools
+# Remarque : Le cluster est maintenant ok, et prêt pour la configuration des pools
 ```
 ## connexion au dashboard du cluster Ceph
-retrouvez vos informations de connexoins fournit lors de l'initialisation du cluster , et utilisez un navigateur pour vous connecter a l'adresse https://192.168.0.11:8443
-saisir le compte admin et le mot de passe associer. il faudra changer le mot de passe par defaut a la premiere connexion.
-Voici une copie d'ecran du dashboard de ceph octopus
+retrouvez vos informations de connexions fournies lors de l'initialisation du cluster , et utilisez un navigateur pour vous connecter à l'adresse https://192.168.0.11:8443
+saisissez le compte admin et le mot de passe associé. Il faudra changer le mot de passe par défaut à la première connexion.
+Voici une copie d'écran du dashboard de ceph octopus
 ![ceph-dashboard](ceph-dashboard.png)
 
 
