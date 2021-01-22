@@ -14,6 +14,16 @@ Comme tous services dans Ceph, le dashboard est en mode haute disponibilité. vo
 ```
 Via la commande ```ceph mgr services``` il est possible de reccupérer l'url du dashboard. 
 ## outils de métrologie
-Grafana et Prometheus peuvent être installés à l'aide de cephadm. Ils seront automatiquement configurés par cephadm. vous retrouvez ensuite l'ensemble des métriques depuis le dashboard sans effort. Lorsque vous créé un cluster Ceph avec cephadmin, Grafana et Prometheus sont installé et configuré par défaut et sont donc directement accessible ;)
+Grafana et Prometheus peuvent être installés à l'aide de cephadm. Ils seront automatiquement configurés par cephadm. vous retrouvez ensuite l'ensemble des métriques depuis le dashboard sans effort. Lorsque vous créé un cluster Ceph avec cephadmin et en activant la gestion des containers, Grafana et Prometheus sont installé et configuré par défaut et sont donc directement accessible ;)
+## Acces au Dashboard depuis ce labs
+Le Dashboard utilise les noms des hosts du labs, qui ne sont pas définit à l'extérieur du labs. Pour facilité sont acces, vous aller utiliser firefox depuis une session distante depuis la vm cephclt.
+```
+sg4r@work:~/dev/ceph-octopus$ vagrant ssh cephclt
+Last login: Thu Jan 21 08:06:58 2021 from 192.168.121.1
+[vagrant@cephclt ~]$ firefox https://cn1:8443/ &
+[1] 3625
+```
+Vous allez être redirigé vers la page d'authentification du Dashboard. Utilisez le compte admin et votre mot de passe défini lors de la création du cluster, puis allez dans "Cluster", puis "Overall Performance" pour visualiser les métriques
+
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/mgr/dashboard/
