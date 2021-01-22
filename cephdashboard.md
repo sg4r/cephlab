@@ -23,7 +23,8 @@ Last login: Thu Jan 21 08:06:58 2021 from 192.168.121.1
 [vagrant@cephclt ~]$ firefox https://cn1:8443/ &
 [1] 3625
 ```
-Vous allez être redirigé vers la page d'authentification du Dashboard. Utilisez le compte admin et votre mot de passe défini lors de la création du cluster, puis allez dans "Cluster", puis "Overall Performance" pour visualiser les métriques
+Vous allez être redirigé vers la page d'authentification du Dashboard. Utilisez le compte admin et votre mot de passe défini lors de la création du cluster, puis allez dans "Cluster", puis "Host", puis "Overall Performance" pour visualiser les métriques prédéfinis.
+
 ![cephdashhostperformance](cephdashhostperformance.png)
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/mgr/dashboard/
