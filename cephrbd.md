@@ -32,7 +32,7 @@ rbd image 'foo':
 	access_timestamp: Mon Jan 11 21:02:33 2021
 	modify_timestamp: Mon Jan 11 21:02:33 2021
 
-# création du pool prbdec en mode erasure coce avec k=2 et m=2
+# création du pool prbdec en mode erasure code avec k=2 et m=2
 [ceph: root@cn1 /]# ceph osd pool create prbdec erasure
 pool 'prbdec' created
 
@@ -75,15 +75,15 @@ device_health_metrics   1    1      0 B        0      0 B      0    111 GiB
 prbd                    2   16  6.3 KiB        6  595 KiB      0    111 GiB
 prbdec                  3   32    8 KiB        1  256 KiB      0    166 GiB
 
-# Remarque : l'espace n'est consommé qu'a l'utilisation.
+# Remarque : l'espace n'est consommé qu'à l'utilisation.
 # Remarque : on voit la différence d'espace disponible entre la replication x3 et l'erasure code k=2,m=2
 
-# exit contenaire
+# exit container
 [ceph: root@cn1 /]# exit
 exit
 ```
 ## préparer le client
-Il est nécéssaire installer les binaires de Ceph sur le client ainsi que les fichiers de configuration pour joindre le cluster Ceph.
+Il est nécessaire d'installer les binaires de Ceph sur le client ainsi que les fichiers de configuration pour joindre le cluster Ceph.
 ```
 # créé la clé pour le client pour l'acces au pool prbd
 [vagrant@cn1 ~]$ sudo ./cephadm shell ceph auth get-or-create client.prbd mon 'profile rbd' osd 'profile rbd pool=prbd, profile rbd pool=prbdec' > ceph.client.prbd.keyring
@@ -95,14 +95,14 @@ Using recent ceph image docker.io/ceph/ceph:v15
 [client.prbd]
 	key = AQCnx/xfhTjDDhAAis6rFEStxGIdORJ+TVpCig==
 
-# remarque: la clé ne doit être accessible qu'a ceph. Dans ce TP on bypass quelques rêgles de sécuritées et d'isolation ;)
+# remarque: la clé ne doit être accessible qu'à ceph. Dans ce TP on bypass quelques règles de sécurité et d'isolation ;)
 # install repo ceph-octopus
 [vagrant@cn1 ~]$ ssh root@cephclt dnf install centos-release-ceph-octopus.noarch
 The authenticity of host 'cephclt (192.168.0.10)' can't be established.
 RSA key fingerprint is SHA256:wJMZR1dtOjr0FNdEGJ7Lgg9f14+YDIUp+RbCvq3xQwM.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 Warning: Permanently added 'cephclt,192.168.0.10' (RSA) to the list of known hosts.
-# install binaire sur le client
+# install du binaire sur le client
 [vagrant@cn1 ~]$ ssh root@cephclt dnf install ceph-common
 # vérifie ceph.conf
 [vagrant@cn1 ~]$ ls /etc/ceph
@@ -110,7 +110,7 @@ ceph.client.admin.keyring  ceph.conf  ceph.pub
 # copie ceph.conf sur le client
 [vagrant@cn1 ~]$ scp /etc/ceph/ceph.conf root@cephclt:/etc/ceph
 ceph.conf                                                                    100%  175    68.4KB/s   00:00    
-# copie la clé pour l'acces au pool prbd sur le client
+# copie de la clé pour l'accès au pool prbd sur le client
 [vagrant@cn1 ~]$ scp ./ceph.client.prbd.keyring root@cephclt:/etc/ceph/
 ceph.client.prbd.keyring                                                    100%   62    37.2KB/s   00:00    
 ```
@@ -289,7 +289,7 @@ SNAPID  NAME    SIZE    PROTECTED  TIMESTAMP
 version1
 version2
 
-# retour a l'état initiale
+# retour à l'état initiale
 [root@cephclt ~]# rbd -n client.prbd status prbd/foo
 Watchers:
 	watcher=192.168.0.10:0/862625393 client.44190 cookie=18446462598732840961
@@ -329,7 +329,7 @@ version1
 [root@cephclt ~]# mount -t xfs -o rw,nouuid /dev/rbd/prbd/fooclone /opt/fooclone
 [root@cephclt ~]# cat /opt/fooclone/fichier.txt
 version1
-# On retrouve la version initial du fichier
+# On retrouve la version initiale du fichier
 [root@cephclt ~]# echo version3>> /opt/fooclone/fichier.txt
 [root@cephclt ~]# cat /opt/fooclone/fichier.txt
 version1
@@ -344,14 +344,14 @@ prbd/fooclone
 Removing snap: 0% complete...failed.
 rbd: snapshot 'snapv1' is protected from removal.
 2021-01-12T16:10:49.449+0000 7fcc4ef3f500 -1 librbd::Operations: snapshot is protected
-# pour faire un clone, il faut protéger le snapshot contre sa suppresion ;)
+# pour faire un clone, il faut protéger le snapshot contre sa suppression ;)
 [root@cephclt ~]# umount /opt/fooclone/
 [root@cephclt ~]# rbd -n client.prbd unmap prbd/fooclone
 [root@cephclt ~]# rbd -n client.prbd snap unprotect prbd/foo@snapv1
 2021-01-12T16:11:32.107+0000 7f95927fc700 -1 librbd::SnapshotUnprotectRequest: cannot unprotect: at least 1 child(ren) [aca63043ec89] in pool 'prbd'
 [...]
 (16) Device or resource busy
-# Normal, il reste un clone a ce snapshot
+# Normal, il reste un clone à ce snapshot
 [root@cephclt ~]# rbd -n client.prbd rm prbd/fooclone
 Removing image: 100% complete...done.
 [root@cephclt ~]# rbd -n client.prbd snap unprotect prbd/foo@snapv1
