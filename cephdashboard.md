@@ -23,7 +23,9 @@ Last login: Thu Jan 21 08:06:58 2021 from 192.168.121.1
 [vagrant@cephclt ~]$ firefox https://cn1:8443/ &
 [1] 3625
 ```
-Vous allez être redirigé vers la page d'authentification du Dashboard. Utilisez le compte admin et votre mot de passe défini lors de la création du cluster, puis allez dans "Cluster", puis "Host", puis "Overall Performance" pour visualiser les métriques prédéfinis.
+Vous allez être redirigé vers la page d'authentification du Dashboard. Utilisez le compte admin et votre mot de passe défini lors de la création du cluster.
+Ouvrez un nouvel onglet et saisir l'url ```https://cn1:3000``` pour valider l'enregistrement du certificat autosigné. Après la visualisation des métriques sous Grafana, vous pouvez clôturer l'onglet de Grafana.
+A présent depuis le Dashboard Ceph, allez dans "Cluster", puis "Host", puis "Overall Performance" pour visualiser directement les métriques prédéfinis.
 
 ![cephdashhostperformance](cephdashhostperformance.png)
 ## Documentation
