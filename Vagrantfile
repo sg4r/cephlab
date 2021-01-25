@@ -10,6 +10,8 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "cephclt"
   config.vm.box = "generic/centos8"
   config.vm.box_check_update = false
+  config.ssh.forward_agent = true
+  config.ssh.forward_x11 = true
   config.vm.network :private_network, ip: "192.168.0.10"
   config.vm.provision "shell", path: "configure.sh"
   config.vm.provider :libvirt do |v|
@@ -31,5 +33,16 @@ Vagrant.configure("2") do |config|
     end
   end
 end
+
+  config.vm.define "cnrw" do |config|
+  config.vm.hostname = "cnrw"
+  config.vm.box = "generic/centos8"
+  config.vm.box_check_update = false
+  config.vm.network :private_network, ip: "192.168.0.15"
+  config.vm.provision "shell", path: "configure.sh"
+  config.vm.provider :libvirt do |v|
+    v.memory = 1024
+    end
+  end
 
 end
