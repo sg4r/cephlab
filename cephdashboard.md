@@ -1,10 +1,10 @@
 # Ceph Dashboard
-Ceph Dashboard, fourni à partir de la version Luminous, une est d'abord une simple vue des diverses informations d’un cluster Ceph via une interface Web.
+Ceph Dashboard, fourni à partir de la version Luminous, est d'abord une simple vue des diverses informations d’un cluster Ceph via une interface Web.
 Cette interface est un module intégré au service mgr de Ceph.
-A partir de la version Octopus, le dashboard permet de gèrer l'ensemble des fonctions d'un cluster Ceph.
+A partir de la version Octopus, le dashboard permet de gérer l'ensemble des fonctions d'un cluster Ceph.
 
-## Acces au dashboard
-Comme tous services dans Ceph, le dashboard est en mode haute disponibilité. voici une méthode pour connaitre l'url de connexion par défaut :
+## Accès au dashboard
+Comme tous les services dans Ceph, le dashboard est en mode haute disponibilité. Voici une méthode pour connaître l'url de connexion par défaut :
 ```
 [ceph: root@cn1 /]# ceph mgr services
 {
@@ -12,9 +12,9 @@ Comme tous services dans Ceph, le dashboard est en mode haute disponibilité. vo
     "prometheus": "http://cn2:9283/"
 }
 ```
-Via la commande ```ceph mgr services``` il est possible de reccupérer l'url du dashboard. 
+Via la commande ```ceph mgr services```, il est possible de récupérer l'url du dashboard. 
 ## outils de métrologie
-Grafana et Prometheus peuvent être installés à l'aide de cephadm. Ils seront automatiquement configurés par cephadm. vous retrouvez ensuite l'ensemble des métriques depuis le dashboard sans effort. Lorsque vous créé un cluster Ceph avec cephadmin et en activant la gestion des containers, Grafana et Prometheus sont installé et configuré par défaut et sont donc directement accessible ;)
+Grafana et Prometheus peuvent être installés à l'aide de cephadm. Ils seront automatiquement configurés par cephadm. Vous retrouverez ensuite l'ensemble des métriques depuis le dashboard sans effort. Lorsque vous créez un cluster Ceph avec cephadmin et en activant la gestion des containers, Grafana et Prometheus sont installés et configurés par défaut et sont donc directement accessibles ;)
 ## Acces au Dashboard depuis ce labs
 Le Dashboard utilise les noms des hosts du labs, qui ne sont pas définit à l'extérieur du labs. Pour facilité sont acces, vous aller utiliser firefox depuis une session distante depuis la vm cephclt.
 ```
