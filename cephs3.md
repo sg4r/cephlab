@@ -26,6 +26,9 @@ Remarque : les utilisateurs  S3 sont connu uniquement de la passerelle et non du
 [vagrant@cn1 ~]$ ssh root@cnrw systemctl stop firewalld.service
 [vagrant@cn1 ~]$ ssh root@cnrw systemctl disable firewalld.service
 
+# Passer dans le contenaire
+[vagrant@cn1 ~]$ sudo ./cephadm shell
+
 # Ajouter au cluster Ceph
 [ceph: root@cn1 /]# ceph orch host add cnrw
 Added host 'cnrw'
