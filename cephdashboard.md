@@ -21,6 +21,11 @@ Le Dashboard utilise les noms des hosts du labs, qui ne sont pas définit à l'e
 sg4r@work:~/dev/ceph-octopus$ vagrant ssh cephclt
 Last login: Thu Jan 21 08:06:58 2021 from 192.168.121.1
 /usr/bin/xauth:  file /home/vagrant/.Xauthority does not exist
+[vagrant@cephclt ~]$ 
+# vérifier avec xeyes que le déport d'affichage d'X fonctionne
+[vagrant@cephclt ~]$ xeyes 
+Warning: locale not supported by C library, locale unchanged
+[vagrant@cephclt ~]$ 
 # install de firefox car il n'est pas inclut par défaut dans l'image
 [vagrant@cephclt ~]$ sudo dnf install -y  firefox
 # utiliser firefox depuis cephclt
