@@ -104,3 +104,9 @@ EOF
 chmod 600 /root/.ssh/id_rsa
 chown root:root /root/.ssh/id_rsa
 
+if [ "$HOSTNAME" == "cephclt" ]; then
+  dnf -y install xorg-x11-xauth
+  dnf config-manager --enable powertools
+  dnf -y install xorg-x11-apps
+fi
+
