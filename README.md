@@ -43,3 +43,8 @@ vagrant destroy
 cd ..
 rm -fr ./ceph-octopus
 ```
+## Evolutions
+Les évolutions concernant ce lab sont :
+- Pool Erasure code pour rgw
+- Configuration HA des rgw S3
+- Réplication multi-sites S3
