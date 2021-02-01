@@ -1,16 +1,16 @@
-# Ceph-octopus Labs
-Matériel pour commencer à jouer avec Ceph. Le labs virtuel Vagrant contient un environnement pour installer et configurer un cluster Ceph en version octopus en quelques étapes accompagné de commentaires pour vous guider à chaque étape. ces informations ne sont pas une procédure d'installation automatisée pour une utilisation en production. 
+# Ceph-octopus Lab
+Matériel pour commencer à jouer avec Ceph. Le lab virtuel Vagrant contient un environnement pour installer et configurer un cluster Ceph en version octopus en quelques étapes accompagné de commentaires pour vous guider à chaque étape. ces informations ne sont pas une procédure d'installation automatisée pour une utilisation en production. 
 ## Installation de vagrant et libvirt sur votre poste Ubuntu
 ```
 sudo apt-get install virt-manager
 sudo apt install vagrant
 ```
-## Clone ceph-octopus labs
+## Clone ceph-octopus lab
 ```
 git clone https://github.com/sg4r/ceph-octopus.git
 cd ceph-octopus
 ```
-## Start labs
+## Start lab
 ```
 #start all Vms 
 vagrant up
