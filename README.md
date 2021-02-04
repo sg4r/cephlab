@@ -48,3 +48,4 @@ Les évolutions concernant ce lab sont :
 - Pool Erasure code pour rgw
 - Configuration HA des rgw S3
 - Réplication multi-sites S3
+- Convertir un cluster Ceph existant
