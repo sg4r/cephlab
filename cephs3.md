@@ -299,6 +299,11 @@ upload: ../../tmp/f2sync/fichier2.txt to s3://my-new-bucket/fichier2.txt
 Cette fonctionnalité disponible depuis la version Octopus, ajoute à RGW la possibilité de mettre en cache des objets en toute sécurité et de décharger la charge de travail du cluster, à l'aide de Nginx. Après avoir accédé à un objet la première fois, il sera stocké dans le répertoire de cache Nginx. Lorsque les données sont déjà mises en cache, elles n'ont pas besoin d'être extraites de RGW. Une vérification d'autorisation sera effectuée par rapport à RGW pour s'assurer que l'utilisateur demandeur a accès. Cette fonctionnalité est basée sur des modules Nginx, ngx_http_auth_request_module, https://github.com/kaltura/nginx-aws-auth-module et Openresty.
 
 Pour plus d'information voir https://docs.ceph.com/en/latest/radosgw/rgw-cache/
+## RGW HA via Ceph orch
+L’orchestrateur de ceph permet de créer un service RGW à haute disponibilité. Ceph Orch déploiera et configurera automatiquement plusieurs conteneurs HAProxy et Keepalived pour assurer la continuité du service RGW tandis que le cluster Ceph aura au moins 1 démon RGW en cours d'exécution. Voir le schéma ci-dessous.
+![cephs3-ha.jpg](cephs3-ha.jpg)
+Pour plus d’information voir https://docs.ceph.com/en/latest/mgr/orchestrator/
+
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/radosgw/
 
