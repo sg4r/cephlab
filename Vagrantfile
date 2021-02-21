@@ -34,15 +34,17 @@ Vagrant.configure("2") do |config|
   end
 end
 
-  config.vm.define "cnrw" do |config|
-  config.vm.hostname = "cnrw"
+(1..2).each do |i|
+  config.vm.define "cnrgw#{i}" do |config|
+  config.vm.hostname = "cnrgw#{i}"
   config.vm.box = "generic/centos8"
   config.vm.box_check_update = false
-  config.vm.network :private_network, ip: "192.168.0.15"
+  config.vm.network :private_network, ip: "192.168.0.#{i+15}"
   config.vm.provision "shell", path: "configure.sh"
   config.vm.provider :libvirt do |v|
     v.memory = 1024
     end
   end
+end
 
 end
