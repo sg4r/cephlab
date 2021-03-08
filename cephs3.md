@@ -16,29 +16,37 @@ Le service RadosGW s’installe généralement sur un nœud dédié. Prévoir un
 RAM en fonction du nombre de clients. Pour équilibrer la charge, il est conseillé d’utiliser plusieurs RadosGW avec un
 proxyHA et comptez une RadosGW pour 50-100 OSDs.
 
-Dans le cadre de ce Labs, il existe une vm ```cmrw``` dédié a l'installation du service RadosGW. Les premières étapes vont d'intégrer ce noeud au cluster Ceph, puis de définir les pools et les comptes utiliser S3 pour l'acces aux données. 
-Remarque : les utilisateurs  S3 sont connu uniquement de la passerelle et non du Cluster Ceph.
+Dans le cadre de ce Labs, il existe deux vms ```cmrgw1 cmrgw2``` dédiée à l'installation du service RadosGW. Les premières étapes vont d'intégrer ces noeuds au cluster Ceph, puis de définir les pools et les comptes utiliser S3 pour l'acces aux données. 
+Remarque : les utilisateurs S3 sont connu uniquement de la passerelle et non du Cluster Ceph.
 
 ```
-# Préparer le node cnrw
-[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cnrw
-[vagrant@cn1 ~]$ ssh root@cnrw dnf install -y podman
-[vagrant@cn1 ~]$ ssh root@cnrw systemctl stop firewalld.service
-[vagrant@cn1 ~]$ ssh root@cnrw systemctl disable firewalld.service
+# Préparer le node cnrgw1 et cnrgw2
+[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cnrgw1
+[vagrant@cn1 ~]$ ssh root@cnrgw1 dnf install -y podman
+[vagrant@cn1 ~]$ ssh root@cnrgw1 systemctl stop firewalld.service
+[vagrant@cn1 ~]$ ssh root@cnrgw1 systemctl disable firewalld.service
+[vagrant@cn1 ~]$ ssh-copy-id -f -i /etc/ceph/ceph.pub root@cnrgw2
+[vagrant@cn1 ~]$ ssh root@cnrgw2 dnf install -y podman
+[vagrant@cn1 ~]$ ssh root@cnrgw2 systemctl stop firewalld.service
+[vagrant@cn1 ~]$ ssh root@cnrgw2 systemctl disable firewalld.service
+
 
 # Passer dans le contenaire
 [vagrant@cn1 ~]$ sudo ./cephadm shell
 
 # Ajouter au cluster Ceph
-[ceph: root@cn1 /]# ceph orch host add cnrw
-Added host 'cnrw'
+[ceph: root@cn1 /]# ceph orch host add cnrgw1
+Added host 'cnrgw1'
+[ceph: root@cn1 /]# ceph orch host add cnrgw2
+Added host 'cnrgw2'
 [ceph: root@cn1 /]# ceph orch host ls
 HOST  ADDR  LABELS  STATUS  
 cn1   cn1                   
 cn2   cn2                   
 cn3   cn3                   
 cn4   cn4                   
-cnrw  cnrw                  
+cnrgw1  cnrgw1
+cnrgw2  cnrgw2
 [ceph: root@cn1 /]# ceph orch ls
 NAME                       RUNNING  REFRESHED  AGE  PLACEMENT  IMAGE NAME                            IMAGE ID      
 alertmanager                   1/1  45s ago    9d   count:1    docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
@@ -59,7 +67,7 @@ prometheus                     1/1  45s ago    9d   count:1    docker.io/prom/pr
     health: HEALTH_OK
  
   services:
-    mon: 5 daemons, quorum cn1,cn3,cn2,cnrw,cn4 (age 26s)
+    mon: 5 daemons, quorum cn1,cn3,cn2,cnrgw1,cn4 (age 26s)
     mgr: cn2.rkgnmp(active, since 37m), standbys: cn1.pnzyvw
     mds: moncfs:1 {0=moncfs.cn1.mbgihz=up:active} 1 up:standby
     osd: 8 osds: 8 up (since 37m), 8 in (since 6d)
