@@ -79,144 +79,110 @@ prometheus                     1/1  45s ago    9d   count:1    docker.io/prom/pr
     pgs:     113 active+clean
 
 # création des domaines S3
-[ceph: root@cn1 /]# radosgw-admin realm create --rgw-realm=default --default
+
+[ceph: root@cn1 /]# RGW_REALM=demodom
+[ceph: root@cn1 /]# RGW_MASTERZONEGRP=fr
+[ceph: root@cn1 /]# RGW_MASTERZONE=fr-est-1
+[ceph: root@cn1 /]# SYSTEM_ACCESS_KEY=DemoZoneSyncKeyAcc
+[ceph: root@cn1 /]# SYSTEM_SECRET_KEY=DemoZoneSyncKeyMegaSecret
+[ceph: root@cn1 /]# 
+[ceph: root@cn1 /]# # hostname de la premiere rgw fr-est-1
+[ceph: root@cn1 /]# RADOSGW=cnrgw1
+[ceph: root@cn1 /]# radosgw-admin realm create --rgw-realm=$RGW_REALM --default
 {
-    "id": "0b3fa5d4-7836-42bc-8e0f-42cd32f90f25",
-    "name": "default",
-    "current_period": "f38d211a-8a55-462a-9f07-b9ded0ac40d6",
+    "id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
+    "name": "demodom",
+    "current_period": "b5ea9223-2ae5-4fc0-bfd8-318001256176",
     "epoch": 1
 }
-[ceph: root@cn1 /]# radosgw-admin zonegroup create --rgw-zonegroup=default --master --default
+[ceph: root@cn1 /]# radosgw-admin zonegroup delete --rgw-zonegroup=default
+failed to init zonegroup: (2) No such file or directory
+
+# pas de configuration initial
+[ceph: root@cn1 /]# radosgw-admin zonegroup create --rgw-zonegroup=$RGW_MASTERZONEGRP  --endpoints=http://$RADOSGW:80 --master --default
 {
-    "id": "99121b91-66c4-4c4a-a37b-c1dd4a5938b0",
-    "name": "default",
-    "api_name": "default",
+    "id": "4c959d20-3520-4c90-b026-d707c9f9332d",
+    "name": "fr",
+    "api_name": "fr",
     "is_master": "true",
-    "endpoints": [],
+    "endpoints": [
+        "http://cnrgw1:80"
+    ],
     "hostnames": [],
     "hostnames_s3website": [],
     "master_zone": "",
     "zones": [],
     "placement_targets": [],
     "default_placement": "",
-    "realm_id": "0b3fa5d4-7836-42bc-8e0f-42cd32f90f25",
+    "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
     "sync_policy": {
         "groups": []
     }
 }
-[ceph: root@cn1 /]# radosgw-admin zone create --rgw-zonegroup=default --rgw-zone=us-east-1 --master --default
+
+[ceph: root@cn1 /]# radosgw-admin zone create --rgw-zonegroup=$RGW_MASTERZONEGRP --rgw-zone=$RGW_MASTERZONE \
+>  --endpoints=http://$RADOSGW:80 --access-key=$SYSTEM_ACCESS_KEY \
+>  --secret=$SYSTEM_SECRET_KEY --default --master
 {
-    "id": "aafa8fde-667c-4c24-beb8-0f0a78286026",
-    "name": "us-east-1",
-    "domain_root": "us-east-1.rgw.meta:root",
-    "control_pool": "us-east-1.rgw.control",
-    "gc_pool": "us-east-1.rgw.log:gc",
-    "lc_pool": "us-east-1.rgw.log:lc",
-    "log_pool": "us-east-1.rgw.log",
-    "intent_log_pool": "us-east-1.rgw.log:intent",
-    "usage_log_pool": "us-east-1.rgw.log:usage",
-    "roles_pool": "us-east-1.rgw.meta:roles",
-    "reshard_pool": "us-east-1.rgw.log:reshard",
-    "user_keys_pool": "us-east-1.rgw.meta:users.keys",
-    "user_email_pool": "us-east-1.rgw.meta:users.email",
-    "user_swift_pool": "us-east-1.rgw.meta:users.swift",
-    "user_uid_pool": "us-east-1.rgw.meta:users.uid",
-    "otp_pool": "us-east-1.rgw.otp",
+    "id": "0238b991-54b6-4dee-8757-5579990fef9d",
+    "name": "fr-est-1",
+    "domain_root": "fr-est-1.rgw.meta:root",
+    "control_pool": "fr-est-1.rgw.control",
+    "gc_pool": "fr-est-1.rgw.log:gc",
+    "lc_pool": "fr-est-1.rgw.log:lc",
+    "log_pool": "fr-est-1.rgw.log",
+    "intent_log_pool": "fr-est-1.rgw.log:intent",
+    "usage_log_pool": "fr-est-1.rgw.log:usage",
+    "roles_pool": "fr-est-1.rgw.meta:roles",
+    "reshard_pool": "fr-est-1.rgw.log:reshard",
+    "user_keys_pool": "fr-est-1.rgw.meta:users.keys",
+    "user_email_pool": "fr-est-1.rgw.meta:users.email",
+    "user_swift_pool": "fr-est-1.rgw.meta:users.swift",
+    "user_uid_pool": "fr-est-1.rgw.meta:users.uid",
+    "otp_pool": "fr-est-1.rgw.otp",
     "system_key": {
-        "access_key": "",
-        "secret_key": ""
+        "access_key": "DemoZoneSyncKeyAcc",
+        "secret_key": "DemoZoneSyncKeyMegaSecret"
     },
     "placement_pools": [
         {
             "key": "default-placement",
             "val": {
-                "index_pool": "us-east-1.rgw.buckets.index",
+                "index_pool": "fr-est-1.rgw.buckets.index",
                 "storage_classes": {
                     "STANDARD": {
-                        "data_pool": "us-east-1.rgw.buckets.data"
+                        "data_pool": "fr-est-1.rgw.buckets.data"
                     }
                 },
-                "data_extra_pool": "us-east-1.rgw.buckets.non-ec",
+                "data_extra_pool": "fr-est-1.rgw.buckets.non-ec",
                 "index_type": 0
             }
         }
     ],
-    "realm_id": "0b3fa5d4-7836-42bc-8e0f-42cd32f90f25"
+    "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d"
 }
+[ceph: root@cn1 /]# # remarque le nom de la zone est $RGW_MASTERZONE
 
-# Installation de la RadosGW sur le noeud cnrw
-[ceph: root@cn1 /]# ceph orch apply rgw default us-east-1 --placement="1 cnrw"
-Scheduled rgw.default.us-east-1 update...
-[ceph: root@cn1 /]# 
- 
-[ceph: root@cn1 /]# ceph -s
-  cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
-    health: HEALTH_OK
- 
-  services:
-    mon: 5 daemons, quorum cn1,cn3,cn2,cnrw,cn4 (age 33m)
-    mgr: cn2.rkgnmp(active, since 70m), standbys: cn1.pnzyvw
-    mds: moncfs:1 {0=moncfs.cn1.mbgihz=up:active} 1 up:standby
-    osd: 8 osds: 8 up (since 70m), 8 in (since 6d)
-    rgw: 1 daemon active (default.us-east-1.cnrw.mnhtaj)
- 
-  task status:
- 
-  data:
-    pools:   9 pools, 224 pgs
-    objects: 261 objects, 16 MiB
-    usage:   8.4 GiB used, 352 GiB / 360 GiB avail
-    pgs:     0.446% pgs not active
-             223 active+clean
-             1   peering
- 
-  progress:
-    PG autoscaler decreasing pool 9 PGs from 32 to 8 (60s)
-      [===========.................] (remaining: 84s)
-
-# remarque: on constate qu'il y a 4 nouveaux pools avec le passage de 5 a 9 pools.
-# remarque: on remarque l'ajout de l'instance rwg dans le cluster
-# remarque: l'autoscaler va diminuer le nombre de PGs pour le pool us-east-1.rgw.meta automatiquement
-[ceph: root@cn1 /]# ceph df
---- RAW STORAGE ---
-CLASS  SIZE     AVAIL    USED     RAW USED  %RAW USED
-hdd    360 GiB  352 GiB  455 MiB   8.4 GiB       2.35
-TOTAL  360 GiB  352 GiB  455 MiB   8.4 GiB       2.35
- 
---- POOLS ---
-POOL                   ID  PGS  STORED   OBJECTS  USED     %USED  MAX AVAIL
-device_health_metrics   1    1      0 B        0      0 B      0    111 GiB
-prbd                    2   16  4.4 MiB       25   16 MiB      0    111 GiB
-prbdec                  3   32  7.7 MiB       18   25 MiB      0    166 GiB
-cephfs.moncfs.meta      4   32  143 KiB       22  1.9 MiB      0    111 GiB
-cephfs.moncfs.data      5   32      0 B        0      0 B      0    111 GiB
-.rgw.root               6   32  2.0 KiB       13  2.2 MiB      0    111 GiB
-us-east-1.rgw.log       7   32  3.4 KiB      175    6 MiB      0    111 GiB
-us-east-1.rgw.control   8   32      0 B        8      0 B      0    111 GiB
-us-east-1.rgw.meta      9    8      0 B        0      0 B      0    111 GiB
-
-# remarque : les nouveaux pools sont : .rgw.root, us-east-1.rgw.log, us-east-1.rgw.control, us-east-1.rgw.meta
-
-# Création d'un utilisateur testuser pour l'acces via S3. La gestion est fait avec l'outil radosgw-admin et non ceph
-[ceph: root@cn1 /]# radosgw-admin user create --uid="testuser" --display-name="testuser First User" --access-key=testuserkacc --secret-key=testuserkpwd
+[ceph: root@cn1 /]# radosgw-admin user create --uid="${RGW_MASTERZONEGRP}_zone.user" --display-name="${RGW_MASTERZONEGRP}_ZoneUser" \
+> --access-key=$SYSTEM_ACCESS_KEY --secret=$SYSTEM_SECRET_KEY --system
 {
-    "user_id": "testuser",
-    "display_name": "testuser First User",
+    "user_id": "fr_zone.user",
+    "display_name": "fr_ZoneUser",
     "email": "",
     "suspended": 0,
     "max_buckets": 1000,
     "subusers": [],
     "keys": [
         {
-            "user": "testuser",
-            "access_key": "testuserkacc",
-            "secret_key": "testuserkpwd"
+            "user": "fr_zone.user",
+            "access_key": "DemoZoneSyncKeyAcc",
+            "secret_key": "DemoZoneSyncKeyMegaSecret"
         }
     ],
     "swift_keys": [],
     "caps": [],
     "op_mask": "read, write, delete",
+    "system": "true",
     "default_placement": "",
     "default_storage_class": "",
     "placement_tags": [],
@@ -239,6 +205,358 @@ us-east-1.rgw.meta      9    8      0 B        0      0 B      0    111 GiB
     "mfa_ids": []
 }
 
+[ceph: root@cn1 /]# 
+[ceph: root@cn1 /]# # valider les modifications et incrémanter la PERIODE
+[ceph: root@cn1 /]# radosgw-admin period update --commit
+{
+    "id": "8f0acd3b-6b23-4807-8ae4-543b0957c5ab",
+    "epoch": 1,
+    "predecessor_uuid": "b5ea9223-2ae5-4fc0-bfd8-318001256176",
+    "sync_status": [],
+    "period_map": {
+        "id": "8f0acd3b-6b23-4807-8ae4-543b0957c5ab",
+        "zonegroups": [
+            {
+                "id": "4c959d20-3520-4c90-b026-d707c9f9332d",
+                "name": "fr",
+                "api_name": "fr",
+                "is_master": "true",
+                "endpoints": [
+                    "http://cnrgw1:80"
+                ],
+                "hostnames": [],
+                "hostnames_s3website": [],
+                "master_zone": "0238b991-54b6-4dee-8757-5579990fef9d",
+                "zones": [
+                    {
+                        "id": "0238b991-54b6-4dee-8757-5579990fef9d",
+                        "name": "fr-est-1",
+                        "endpoints": [
+                            "http://cnrgw1:80"
+                        ],
+                        "log_meta": "false",
+                        "log_data": "false",
+                        "bucket_index_max_shards": 11,
+                        "read_only": "false",
+                        "tier_type": "",
+                        "sync_from_all": "true",
+                        "sync_from": [],
+                        "redirect_zone": ""
+                    }
+                ],
+                "placement_targets": [
+                    {
+                        "name": "default-placement",
+                        "tags": [],
+                        "storage_classes": [
+                            "STANDARD"
+                        ]
+                    }
+                ],
+                "default_placement": "default-placement",
+                "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
+                "sync_policy": {
+                    "groups": []
+                }
+            }
+        ],
+        "short_zone_ids": [
+            {
+                "key": "0238b991-54b6-4dee-8757-5579990fef9d",
+                "val": 2434533641
+            }
+        ]
+    },
+    "master_zonegroup": "4c959d20-3520-4c90-b026-d707c9f9332d",
+    "master_zone": "0238b991-54b6-4dee-8757-5579990fef9d",
+    "period_config": {
+        "bucket_quota": {
+            "enabled": false,
+            "check_on_raw": false,
+            "max_size": -1,
+            "max_size_kb": 0,
+            "max_objects": -1
+        },
+        "user_quota": {
+            "enabled": false,
+            "check_on_raw": false,
+            "max_size": -1,
+            "max_size_kb": 0,
+            "max_objects": -1
+        }
+    },
+    "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
+    "realm_name": "demodom",
+    "realm_epoch": 2
+}
+[ceph: root@cn1 /]# 
+
+[ceph: root@cn1 /]# # déployer la rgw
+[ceph: root@cn1 /]# ceph orch apply rgw $RGW_REALM $RGW_MASTERZONE --placement="1 $RADOSGW"
+Scheduled rgw.demodom.fr-est-1 update...
+[ceph: root@cn1 /]# 
+[ceph: root@cn1 /]# 
+[ceph: root@cn1 /]# ceph orch ls
+NAME                       RUNNING  REFRESHED  AGE  PLACEMENT       IMAGE NAME                            IMAGE ID      
+alertmanager                   1/1  5s ago     3w   count:1         docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
+crash                          6/6  6m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+grafana                        1/1  5s ago     3w   count:1         docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                            2/2  5m ago     3w   count:2         docker.io/ceph/ceph:v15               5553b0cb212c  
+mon                            5/5  6m ago     3w   count:5         docker.io/ceph/ceph:v15               5553b0cb212c  
+node-exporter                  6/6  6m ago     3w   *               docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+osd.all-available-devices      8/8  6m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+prometheus                     1/1  5s ago     3w   count:1         docker.io/prom/prometheus:v2.18.1     de242295e225  
+rgw.demodom.fr-est-1           0/1  -          -    cnrgw1;count:1  <unknown>                             <unknown>     
+
+# Remarque : initialisation de l'installation de rgw.demodom.fr-est-1
+
+[ceph: root@cn1 /]# ceph orch ls
+NAME                       RUNNING  REFRESHED  AGE  PLACEMENT       IMAGE NAME                            IMAGE ID      
+alertmanager                   1/1  28s ago    3w   count:1         docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
+crash                          6/6  6m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+grafana                        1/1  28s ago    3w   count:1         docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                            2/2  6m ago     3w   count:2         docker.io/ceph/ceph:v15               5553b0cb212c  
+mon                            5/5  6m ago     3w   count:5         docker.io/ceph/ceph:v15               5553b0cb212c  
+node-exporter                  6/6  6m ago     3w   *               docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+osd.all-available-devices      8/8  6m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+prometheus                     1/1  28s ago    3w   count:1         docker.io/prom/prometheus:v2.18.1     de242295e225  
+rgw.demodom.fr-est-1           1/1  15s ago    21s  cnrgw1;count:1  docker.io/ceph/ceph:v15               5553b0cb212c  
+
+# Remarque : rgw.demodom.fr-est-1 est en fonctionnement
+
+[ceph: root@cn1 /]# curl http://cnrgw1 |xmllint --format -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   214    0   214    0     0  30571      0 --:--:-- --:--:-- --:--:-- 30571
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <Owner>
+    <ID>anonymous</ID>
+    <DisplayName/>
+  </Owner>
+  <Buckets/>
+</ListAllMyBucketsResult>
+
+# Remarque: il y a bien un service http sur le port 80 de cnrgw1
+
+[ceph: root@cn1 /]# ## Ajouter une deuxieme rgw pour fr-est => fr-est-2
+[ceph: root@cn1 /]# RGW_MASTERZONE=fr-est-2
+[ceph: root@cn1 /]# # hostname pour la deuxieme rgw fr-est-2
+[ceph: root@cn1 /]# RADOSGW=cnrgw2
+[ceph: root@cn1 /]# radosgw-admin zone create --rgw-zonegroup=$RGW_MASTERZONEGRP --rgw-zone=$RGW_MASTERZONE \
+>  --endpoints=http://$RADOSGW:80 --access-key=$SYSTEM_ACCESS_KEY \
+>  --secret=$SYSTEM_SECRET_KEY
+{
+    "id": "040b9be7-0df6-4961-9eeb-d919bdfeaa12",
+    "name": "fr-est-2",
+    "domain_root": "fr-est-2.rgw.meta:root",
+    "control_pool": "fr-est-2.rgw.control",
+    "gc_pool": "fr-est-2.rgw.log:gc",
+    "lc_pool": "fr-est-2.rgw.log:lc",
+    "log_pool": "fr-est-2.rgw.log",
+    "intent_log_pool": "fr-est-2.rgw.log:intent",
+    "usage_log_pool": "fr-est-2.rgw.log:usage",
+    "roles_pool": "fr-est-2.rgw.meta:roles",
+    "reshard_pool": "fr-est-2.rgw.log:reshard",
+    "user_keys_pool": "fr-est-2.rgw.meta:users.keys",
+    "user_email_pool": "fr-est-2.rgw.meta:users.email",
+    "user_swift_pool": "fr-est-2.rgw.meta:users.swift",
+    "user_uid_pool": "fr-est-2.rgw.meta:users.uid",
+    "otp_pool": "fr-est-2.rgw.otp",
+    "system_key": {
+        "access_key": "DemoZoneSyncKeyAcc",
+        "secret_key": "DemoZoneSyncKeyMegaSecret"
+    },
+    "placement_pools": [
+        {
+            "key": "default-placement",
+            "val": {
+                "index_pool": "fr-est-2.rgw.buckets.index",
+                "storage_classes": {
+                    "STANDARD": {
+                        "data_pool": "fr-est-2.rgw.buckets.data"
+                    }
+                },
+                "data_extra_pool": "fr-est-2.rgw.buckets.non-ec",
+                "index_type": 0
+            }
+        }
+    ],
+    "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d"
+}
+ cluster CEPH.1 /]# # remarque : il n'y a pas de répliquation, car les objets sont stoqué dans le même pool sur le même 
+[ceph: root@cn1 /]# 
+
+[ceph: root@cn1 /]# radosgw-admin period update --commit
+{
+    "id": "8f0acd3b-6b23-4807-8ae4-543b0957c5ab",
+    "epoch": 2,
+    "predecessor_uuid": "b5ea9223-2ae5-4fc0-bfd8-318001256176",
+    "sync_status": [],
+    "period_map": {
+        "id": "8f0acd3b-6b23-4807-8ae4-543b0957c5ab",
+        "zonegroups": [
+            {
+                "id": "4c959d20-3520-4c90-b026-d707c9f9332d",
+                "name": "fr",
+                "api_name": "fr",
+                "is_master": "true",
+                "endpoints": [
+                    "http://cnrgw1:80"
+                ],
+                "hostnames": [],
+                "hostnames_s3website": [],
+                "master_zone": "0238b991-54b6-4dee-8757-5579990fef9d",
+                "zones": [
+                    {
+                        "id": "0238b991-54b6-4dee-8757-5579990fef9d",
+                        "name": "fr-est-1",
+                        "endpoints": [
+                            "http://cnrgw1:80"
+                        ],
+                        "log_meta": "false",
+                        "log_data": "true",
+                        "bucket_index_max_shards": 11,
+                        "read_only": "false",
+                        "tier_type": "",
+                        "sync_from_all": "true",
+                        "sync_from": [],
+                        "redirect_zone": ""
+                    },
+                    {
+                        "id": "040b9be7-0df6-4961-9eeb-d919bdfeaa12",
+                        "name": "fr-est-2",
+                        "endpoints": [
+                            "http://cnrgw2:80"
+                        ],
+                        "log_meta": "false",
+                        "log_data": "true",
+                        "bucket_index_max_shards": 11,
+                        "read_only": "false",
+                        "tier_type": "",
+                        "sync_from_all": "true",
+                        "sync_from": [],
+                        "redirect_zone": ""
+                    }
+                ],
+                "placement_targets": [
+                    {
+                        "name": "default-placement",
+                        "tags": [],
+                        "storage_classes": [
+                            "STANDARD"
+                        ]
+                    }
+                ],
+                "default_placement": "default-placement",
+                "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
+                "sync_policy": {
+                    "groups": []
+                }
+            }
+        ],
+        "short_zone_ids": [
+            {
+                "key": "0238b991-54b6-4dee-8757-5579990fef9d",
+                "val": 2434533641
+            },
+            {
+                "key": "040b9be7-0df6-4961-9eeb-d919bdfeaa12",
+                "val": 3410344401
+            }
+        ]
+    },
+    "master_zonegroup": "4c959d20-3520-4c90-b026-d707c9f9332d",
+    "master_zone": "0238b991-54b6-4dee-8757-5579990fef9d",
+    "period_config": {
+        "bucket_quota": {
+            "enabled": false,
+            "check_on_raw": false,
+            "max_size": -1,
+            "max_size_kb": 0,
+            "max_objects": -1
+        },
+        "user_quota": {
+            "enabled": false,
+            "check_on_raw": false,
+            "max_size": -1,
+            "max_size_kb": 0,
+            "max_objects": -1
+        }
+    },
+    "realm_id": "6136dc56-ee0b-4c00-be95-feefee061d1d",
+    "realm_name": "demodom",
+    "realm_epoch": 2
+}
+[ceph: root@cn1 /]# 
+
+
+[ceph: root@cn1 /]# # déployer la rgw
+[ceph: root@cn1 /]# ceph orch apply rgw $RGW_REALM $RGW_MASTERZONE --placement="1 $RADOSGW"
+Scheduled rgw.demodom.fr-est-2 update...
+[ceph: root@cn1 /]# # vérification
+[ceph: root@cn1 /]# ceph orch ls
+NAME                       RUNNING  REFRESHED  AGE  PLACEMENT       IMAGE NAME                            IMAGE ID      
+alertmanager                   1/1  7m ago     3w   count:1         docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
+crash                          6/6  7m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+grafana                        1/1  7m ago     3w   count:1         docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                            2/2  7m ago     3w   count:2         docker.io/ceph/ceph:v15               5553b0cb212c  
+mon                            5/5  7m ago     3w   count:5         docker.io/ceph/ceph:v15               5553b0cb212c  
+node-exporter                  6/6  7m ago     3w   *               docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+osd.all-available-devices      8/8  7m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+prometheus                     1/1  7m ago     3w   count:1         docker.io/prom/prometheus:v2.18.1     de242295e225  
+rgw.demodom.fr-est-1           1/1  7m ago     7m   cnrgw1;count:1  docker.io/ceph/ceph:v15               5553b0cb212c  
+rgw.demodom.fr-est-2           0/1  -          -    cnrgw2;count:1  <unknown>                             <unknown>     
+
+[ceph: root@cn1 /]# ceph orch ls
+NAME                       RUNNING  REFRESHED  AGE  PLACEMENT       IMAGE NAME                            IMAGE ID      
+alertmanager                   1/1  7m ago     3w   count:1         docker.io/prom/alertmanager:v0.20.0   0881eb8f169f  
+crash                          6/6  7m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+grafana                        1/1  7m ago     3w   count:1         docker.io/ceph/ceph-grafana:6.6.2     a0dce381714a  
+mgr                            2/2  7m ago     3w   count:2         docker.io/ceph/ceph:v15               5553b0cb212c  
+mon                            5/5  7m ago     3w   count:5         docker.io/ceph/ceph:v15               5553b0cb212c  
+node-exporter                  6/6  7m ago     3w   *               docker.io/prom/node-exporter:v0.18.1  e5a616e4b9cf  
+osd.all-available-devices      8/8  7m ago     3w   *               docker.io/ceph/ceph:v15               5553b0cb212c  
+prometheus                     1/1  7m ago     3w   count:1         docker.io/prom/prometheus:v2.18.1     de242295e225  
+rgw.demodom.fr-est-1           1/1  7m ago     7m   cnrgw1;count:1  docker.io/ceph/ceph:v15               5553b0cb212c  
+rgw.demodom.fr-est-2           1/1  10s ago    14s  cnrgw2;count:1  docker.io/ceph/ceph:v15               5553b0cb212c  
+
+[ceph: root@cn1 /]# curl http://cnrgw2 |xmllint --format -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   214    0   214    0     0  71333      0 --:--:-- --:--:-- --:--:-- 71333
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <Owner>
+    <ID>anonymous</ID>
+    <DisplayName/>
+  </Owner>
+  <Buckets/>
+</ListAllMyBucketsResult>
+
+
+[ceph: root@cn1 /]# ceph df
+--- RAW STORAGE ---
+CLASS  SIZE     AVAIL    USED     RAW USED  %RAW USED
+hdd    360 GiB  351 GiB  638 MiB   8.6 GiB       2.40
+TOTAL  360 GiB  351 GiB  638 MiB   8.6 GiB       2.40
+ 
+--- POOLS ---
+POOL                   ID  PGS  STORED   OBJECTS  USED     %USED  MAX AVAIL
+device_health_metrics   1    1  1.3 KiB        0  3.9 KiB      0    111 GiB
+.rgw.root               8   32  6.1 KiB       19  3.4 MiB      0    111 GiB
+fr-est-1.rgw.log        9   32  8.5 KiB      434   30 MiB      0    111 GiB
+fr-est-1.rgw.control   10   32      0 B        8      0 B      0    111 GiB
+fr-est-1.rgw.meta      11    8    348 B        2  384 KiB      0    111 GiB
+fr-est-2.rgw.log       12   32   11 KiB      547   43 MiB   0.01    111 GiB
+fr-est-2.rgw.control   13   32      0 B        8      0 B      0    111 GiB
+fr-est-2.rgw.meta      14   13    348 B        2  384 KiB      0    111 GiB
+fr-est-1.rgw.otp       15   32      0 B        0      0 B      0    111 GiB
+
+
+
+
+=== a corriger ===
 # Quittez le contenaire pour tester le service S3
 [ceph: root@cn1 /]# exit
 exit
