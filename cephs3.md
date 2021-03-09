@@ -553,16 +553,25 @@ fr-est-2.rgw.control   13   32      0 B        8      0 B      0    111 GiB
 fr-est-2.rgw.meta      14   13    348 B        2  384 KiB      0    111 GiB
 fr-est-1.rgw.otp       15   32      0 B        0      0 B      0    111 GiB
 
-
-
-
-=== a corriger ===
 # Quittez le contenaire pour tester le service S3
 [ceph: root@cn1 /]# exit
 exit
 
+[vagrant@cn1 ~]$ # vérification que cnrgw1 et cnrgw2 sont accéssible 
+[vagrant@cn1 ~]$ curl http://cnrgw1 |xmllint --format -
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   214    0   214    0     0   8560      0 --:--:-- --:--:-- --:--:--  8560
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+  <Owner>
+    <ID>anonymous</ID>
+    <DisplayName/>
+  </Owner>
+  <Buckets/>
+</ListAllMyBucketsResult>
 [vagrant@cn1 ~]$ 
-[vagrant@cn1 ~]$ curl http://cnrw |xmllint --format -
+[vagrant@cn1 ~]$ curl http://cnrgw2 |xmllint --format -
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100   214    0   214    0     0   8560      0 --:--:-- --:--:-- --:--:--  8560
@@ -576,11 +585,48 @@ exit
 </ListAllMyBucketsResult>
 [vagrant@cn1 ~]$ 
 
-# Remarque : RGW est bien accessible depuis le port 80 de cnrw
 
-[vagrant@cn1 ~]$ exit
-logout
-Connection to 192.168.121.217 closed.
+# Remarque : cnrgw1 et cnrgw2 sont bien accessible depuis le port 80
+
+
+[vagrant@cn1 ~]$ sudo dnf install -y awscli
+[vagrant@cn1 ~]$ RGW_REALM=demodom
+[vagrant@cn1 ~]$ RGW_MASTERZONEGRP=fr
+[vagrant@cn1 ~]$ RGW_MASTERZONE=fr-est-1
+[vagrant@cn1 ~]$ SYSTEM_ACCESS_KEY=DemoZoneSyncKeyAcc
+[vagrant@cn1 ~]$ SYSTEM_SECRET_KEY=DemoZoneSyncKeyMegaSecret
+[vagrant@cn1 ~]$ export AWS_ACCESS_KEY_ID=$SYSTEM_ACCESS_KEY
+[vagrant@cn1 ~]$ export AWS_SECRET_ACCESS_KEY=$SYSTEM_SECRET_KEY
+[vagrant@cn1 ~]$ export AWS_DEFAULT_REGION=$RGW_MASTERZONEGRP
+[vagrant@cn1 ~]$ 
+[vagrant@cn1 ~]$ aws s3 mb s3://mybucket  --endpoint-url http://cnrgw1
+[vagrant@cn1 ~]$ aws s3 ls  --endpoint-url http://cnrgw1
+2021-02-22 08:42:12 mybucket
+[vagrant@cn1 ~]$ aws s3 ls  --endpoint-url http://cnrgw2
+2021-02-22 08:42:12 mybucket
+[vagrant@cn1 ~]$ aws s3 mb s3://mybucket2  --endpoint-url http://cnrgw2
+[vagrant@cn1 ~]$ aws s3 ls  --endpoint-url http://cnrgw2
+2021-02-22 08:42:12 mybucket
+2021-02-22 08:43:47 mybucket2
+[vagrant@cn1 ~]$ aws s3 ls  --endpoint-url http://cnrgw1
+2021-02-22 08:42:12 mybucket
+2021-02-22 08:43:47 mybucket2
+
+# remarque: cnrgw1 et cnrgw2 utilise le même pool du même cluster CEPH, donc c'est logique qu'il y a les même informations
+
+[vagrant@cn1 ~]$ 
+[vagrant@cn1 ~]$ aws s3 cp /etc/hosts s3://mybucket2/hostcn1  --endpoint-url http://cnrgw2
+upload: ../../etc/hosts to s3://mybucket2/hostcn1                   
+[vagrant@cn1 ~]$ aws s3 cp s3://mybucket2/hostcn1 /tmp/hostcn1  --endpoint-url http://cnrgw1
+download: s3://mybucket2/hostcn1 to ../../tmp/hostcn1              
+[vagrant@cn1 ~]$ head -n 5 /tmp/hostcn1 
+127.0.0.1	cn1	cn1
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+127.0.0.1 centos8.localdomain
+
+# remarque: cnrgw1 et cnrgw2 peuvent être utilisé avec un DNS ou une solution en HA
 
 # connexion sur cephclt qui n'est pas dans le cluster Ceph
 sg4r@work:~/dev/ceph-octopus$ vagrant ssh cephclt
@@ -591,16 +637,16 @@ Last login: Wed Jan 20 17:07:08 2021 from 192.168.121.1
 [vagrant@cephclt ~]$ aws configure
 AWS Access Key ID [None]: testuserkacc
 AWS Secret Access Key [None]: testuserkpwd
-Default region name [None]: us-east-1
+Default region name [None]: fr-est-1
 Default output format [None]: json
 
 # Création d'un bucket S3. il doit être unique.
-[vagrant@cephclt ~]$ aws s3 mb s3://my-new-bucket --endpoint-url http://cnrw
+[vagrant@cephclt ~]$ aws s3 mb s3://my-new-bucket --endpoint-url http://cnrgw1
 make_bucket: my-new-bucket
 # Quelques exemple de manipulation de fichiers
-[vagrant@cephclt ~]$ aws s3 cp /etc/hosts s3://my-new-bucket --endpoint-url http://cnrw
+[vagrant@cephclt ~]$ aws s3 cp /etc/hosts s3://my-new-bucket --endpoint-url http://cnrgw1
 upload: ../../etc/hosts to s3://my-new-bucket/hosts                 
-[vagrant@cephclt ~]$ aws s3 ls s3://my-new-bucket --endpoint-url http://cnrw
+[vagrant@cephclt ~]$ aws s3 ls s3://my-new-bucket --endpoint-url http://cnrgw1
 2021-01-21 09:11:06        323 hosts
 
 [vagrant@cephclt ~]$ mkdir /tmp/f2sync
@@ -608,13 +654,13 @@ upload: ../../etc/hosts to s3://my-new-bucket/hosts
 [vagrant@cephclt ~]$ echo fichier2 >>/tmp/f2sync/fichier2.txt
 [vagrant@cephclt ~]$ mkdir /tmp/f2sync/f2
 [vagrant@cephclt ~]$ echo fichier3 >>/tmp/f2sync/f2/fichier3.txt
-[vagrant@cephclt ~]$ aws s3 sync /tmp/f2sync  s3://my-new-bucket/ --endpoint-url http://cnrw --delete
+[vagrant@cephclt ~]$ aws s3 sync /tmp/f2sync  s3://my-new-bucket/ --endpoint-url http://cnrgw1 --delete
 delete: s3://my-new-bucket/hosts
 upload: ../../tmp/f2sync/fichier1.txt to s3://my-new-bucket/fichier1.txt
 upload: ../../tmp/f2sync/f2/fichier3.txt to s3://my-new-bucket/f2/fichier3.txt
 upload: ../../tmp/f2sync/fichier2.txt to s3://my-new-bucket/fichier2.txt
 
-[vagrant@cephclt ~]$ aws s3 ls s3://my-new-bucket --endpoint-url http://cnrw --recursive
+[vagrant@cephclt ~]$ aws s3 ls s3://my-new-bucket --endpoint-url http://cnrgw1 --recursive
 2021-01-21 10:05:45          9 f2/fichier3.txt
 2021-01-21 10:05:45          9 fichier1.txt
 2021-01-21 10:05:45          9 fichier2.txt
