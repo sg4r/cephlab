@@ -674,7 +674,7 @@ Pour plus d'information voir https://docs.ceph.com/en/latest/radosgw/rgw-cache/
 ## RGW HA via Ceph orch
 L’orchestrateur de ceph permet de créer un service RGW à haute disponibilité. Ceph Orch déploiera et configurera automatiquement plusieurs conteneurs HAProxy et Keepalived pour assurer la continuité du service RGW tandis que le cluster Ceph aura au moins 1 démon RGW en cours d'exécution. Voir le schéma ci-dessous.
 ![cephs3-ha.jpg](cephs3-ha.jpg)
-Pour plus d’information voir https://docs.ceph.com/en/latest/mgr/orchestrator/
+Pour plus d’information voir https://docs.ceph.com/en/latest/cephadm/rgw/#high-availability-service-for-rgw
 
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/radosgw/
