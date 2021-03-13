@@ -676,6 +676,103 @@ L’orchestrateur de ceph permet de créer un service RGW à haute disponibilit�
 ![cephs3-ha.jpg](cephs3-ha.jpg)
 Pour plus d’information voir https://docs.ceph.com/en/latest/cephadm/rgw/#high-availability-service-for-rgw
 
+```
+# depuis root@cnrgw1
+[root@cnrgw1 ~]# cat /etc/sysctl.conf 
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv4.ip_forward = 1
+net.ipv4.ip_nonlocal_bind = 1
+
+[root@cnrgw1 ~]# sysctl -p
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv4.ip_forward = 1
+net.ipv4.ip_nonlocal_bind = 1
+
+#idem sous cnrgw2
+
+[vagrant@cn1 ~]# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./rgwha.key -out ./rgwha.crt
+Generating a RSA private key
+.............+++++
+........................................................+++++
+writing new private key to './rgwha.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:fr
+State or Province Name (full name) []:est
+Locality Name (eg, city) [Default City]:sbg
+Organization Name (eg, company) [Default Company Ltd]:cephlab.org    
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:cnrgwha
+Email Address []:root@localhost 
+
+
+# creer le fichier rgwha.yaml
+
+service_type: ha-rgw
+service_id: haproxy_for_rgw
+placement:
+  hosts:
+    - cnrgw1
+    - cnrgw2
+spec:
+  virtual_ip_interface: eth1
+  virtual_ip_address: 192.168.0.15/24
+  frontend_port: 8080
+  ha_proxy_port: 1967
+  ha_proxy_stats_enabled: true
+  ha_proxy_stats_user: admin
+  ha_proxy_stats_password: true
+  ha_proxy_enable_prometheus_exporter: true
+  ha_proxy_monitor_uri: /haproxy_health
+  keepalived_user: admin
+  keepalived_password: admin
+  ha_proxy_frontend_ssl_certificate: 
+    [
+      "-----BEGIN CERTIFICATE-----",
+      "MIICSzCCAfWgAwIBAgIUWKC9e+5tnIAjddECXOGc144p8E0wDQYJKoZIhvcNAQEL",
+      "BQAwejELMAkGA1UEBhMCZnIxDDAKBgNVBAgMA2VzdDEMMAoGA1UEBwwDc2JnMRAw",
+      "DgYDVQQKDAdjZXBobGFiMQwwCgYDVQQLDANvcmcxEDAOBgNVBAMMB2Nucmd3aGEx",
+      "HTAbBgkqhkiG9w0BCQEWDnJvb3RAbG9jYWxob3N0MB4XDTIxMDMwOTE0MjI0N1oX",
+      "DTIyMDMwOTE0MjI0N1owejELMAkGA1UEBhMCZnIxDDAKBgNVBAgMA2VzdDEMMAoG",
+      "A1UEBwwDc2JnMRAwDgYDVQQKDAdjZXBobGFiMQwwCgYDVQQLDANvcmcxEDAOBgNV",
+      "BAMMB2Nucmd3aGExHTAbBgkqhkiG9w0BCQEWDnJvb3RAbG9jYWxob3N0MFwwDQYJ",
+      "KoZIhvcNAQEBBQADSwAwSAJBAMqji/AKBr6DbuHKOTWyIBWbeYkyZ7Jn7fqfZceE",
+      "p7G321t1TvAjD7sa64FRT6n4x8CtzKPGXXpRr28o8oR1h70CAwEAAaNTMFEwHQYD",
+      "VR0OBBYEFIQim5ZxojFny+srzQJIs1N8wLmYMB8GA1UdIwQYMBaAFIQim5ZxojFn",
+      "y+srzQJIs1N8wLmYMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADQQCE",
+      "eCwMQFNYtw+4I1QzTV13ewawuPkPdrhiNzcs0mgt93+quE0zBIeOY2jnFmlo6H/h",
+      "syYGvwgcAh9VW9qo5fsk",
+      "-----END CERTIFICATE-----",
+      "-----BEGIN PRIVATE KEY-----",
+      "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAyqOL8AoGvoNu4co5",
+      "NbIgFZt5iTJnsmft+p9lx4SnsbfbW3VO8CMPuxrrgVFPqfjHwK3Mo8ZdelGvbyjy",
+      "hHWHvQIDAQABAkB0kt2AO+RhWS9CyZlb4JtAku66FLs/ETcAxQ5CV3g5beq8/wRs",
+      "x3xZhIsjdr7OZZ+BEoJYn+0upywoctXmwM8BAiEA+KG26RADqJfAdoRn640UrT9E",
+      "pfF3drDrQg0WrKAf3N0CIQDQpOZa0pV2GL28u2NaU85uJCDeKDWhTnvFEqlLu/S4",
+      "YQIhAPY+0/WIUtdLVOcMxA/bLrtXihoASR1Yo+hLJkXaYTRRAiB3Rh1txD6vEXu+",
+      "Hb2xUIGNE1g6x+/ItA4rXfysD9nZYQIhAKYn3IdG55JwiwSKv8gVAEdX8xiUfEjY",
+      "pnvk3p52VHHI",
+      "-----END PRIVATE KEY-----"
+    ]
+  ha_proxy_frontend_ssl_port: 8090
+  ha_proxy_ssl_dh_param: 1024
+  ha_proxy_ssl_ciphers: ECDH+AESGCM:!MD5
+  ha_proxy_ssl_options: no-sslv3
+  haproxy_container_image: haproxy:2.4-dev3-alpine
+  keepalived_container_image: arcts/keepalived:1.2.2
+
+[ceph: root@cn1 ~]# ceph orch apply -i rgwha.yaml 
+Error EINVAL: ServiceSpec: __init__() got an unexpected keyword argument 'virtual_ip_interface'
+
+```
+
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/radosgw/
 
