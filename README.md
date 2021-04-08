@@ -50,4 +50,4 @@ Les évolutions concernant ce lab sont :
 - Configuration HA des rgw S3
 - Réplication multi-sites S3
 - Convertir un cluster Ceph existant
-- Exemple d'installation avec ceph-ansible
+- [Exemple d'installation avec ceph-ansible](cephansible.md)
