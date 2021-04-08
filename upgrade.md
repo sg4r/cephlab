@@ -1,4 +1,14 @@
-# Mise a jour vers Ceph Pacific
+# Mise à niveau
+Cephadm est capable de mettre à niveau et en toute sécurité un cluster Ceph d'une version de correction de bogue à une autre.
+Par exemple, vous pouvez passer de la v15.2.0 (la première version d'Octopus) à la prochaine version ponctuelle v15.2.1.
+Vous pouvez aussi passer a une version majeur de la même maniere ;)
+
+Le processus de mise à niveau automatisé suit les meilleures pratiques Ceph. Par exemple:
+ - L'ordre de mise à niveau commence avec les gestionnaires, les moniteurs, puis les autres démons.
+ - Chaque démon est redémarré uniquement après que Ceph indique que le cluster restera disponible.
+ - Gardez à l'esprit que l'état d'intégrité du cluster Ceph est susceptible de basculer sur HEALTH_WARNING pendant la mise à niveau.
+
+## Exemple de mise à niveau de la version 15.2.9 à 16.2.0 (Pacific)
 mise à jour via la commande ```ceph orch upgrade``` vers la version 16.2.0
 ```
 # vérification de l'etat du cluster
