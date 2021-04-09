@@ -37,6 +37,7 @@ Switched to a new branch 'stable-5.0'
 [vagrant@cn1 ceph-ansible]$ cp site.yml.sample site.yml
 [vagrant@cn1 ceph-ansible]$ cp group_vars/all.yml.sample group_vars/all.yml
 [vagrant@cn1 ceph-ansible]$ cp group_vars/osds.yml.sample group_vars/osds.yml
+# ajouter à la fin du fichier
 
 vi group_vars/all.yml
 ceph_release_num: 15
@@ -58,12 +59,13 @@ dashboard_admin_password: demodhp@swd
 grafana_admin_user: admingf
 grafana_admin_password: demogfp@swd
 
-
+# ajouter à la fin du fichier
 vi group_vars/osds.yml
 osd_auto_discovery: true
 # lvm_volumes: []
 osds_per_device: 1
 
+# creer le fichier hosts
 vi hosts
 # Ceph admin user for SSH and Sudo
 [all:vars]
