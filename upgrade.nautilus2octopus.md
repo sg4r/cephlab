@@ -1,7 +1,52 @@
+# TP de nautilus à octopus
+l'exercice est de migrer un cluster ceph de la version nautilus et déployé avec ceph-deploy vers ceph octopus
+```
+$ cp Vagrantfile.ct7 Vagrantfile
+$ vagrant up
+$ vagrant status
+Current machine states:
+
+cephclt                   running (libvirt)
+cn1                       running (libvirt)
+cn2                       running (libvirt)
+cn3                       running (libvirt)
+cn4                       running (libvirt)
+```
+le TP va utiliser des vms en CentOS7 qu'il faudra mettre a jours.
+## connexion à l'environement
+```
+$ vagrant ssh cn1
+```
 # Installation ceph nautilus sous CentOS7
 création d'un cluster ceph minimal pour tester les étapes de mises a jours vers ceph octopus
 ```
 sudo  vi /etc/yum.repos.d/ceph.repo
+[Ceph]
+name=Ceph packages for $basearch
+baseurl=http://download.ceph.com/rpm-nautilus/el7/$basearch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
+
+[Ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://download.ceph.com/rpm-nautilus/el7/noarch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
+
+[ceph-source]
+name=Ceph source packages
+baseurl=http://download.ceph.com/rpm-nautilus/el7/SRPMS
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
 
 
 sudo yum install ceph-deploy
