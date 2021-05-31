@@ -49,5 +49,5 @@ Les évolutions concernant ce lab sont :
 - Pool Erasure code pour rgw
 - Configuration HA des rgw S3
 - Réplication multi-sites S3
-- Convertir un cluster Ceph existant
+- [Convertir un cluster Ceph existant](upgrade.nautilus2octopus.md)
 - [Exemple d'installation avec ceph-ansible](cephansible.md)
