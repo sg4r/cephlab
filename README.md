@@ -7,8 +7,8 @@ sudo apt install vagrant
 ```
 ## Clone ceph-octopus lab
 ```
-git clone https://github.com/sg4r/ceph-octopus.git
-cd ceph-octopus
+git clone https://github.com/sg4r/cephlab.git
+cd cephlab
 ```
 ## Start lab
 ```
