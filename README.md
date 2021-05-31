@@ -5,7 +5,7 @@ Matériel pour commencer à jouer avec Ceph. Le lab virtuel Vagrant contient un 
 sudo apt-get install virt-manager
 sudo apt install vagrant
 ```
-## Clone ceph-octopus lab
+## Clone cephlab
 ```
 git clone https://github.com/sg4r/cephlab.git
 cd cephlab
