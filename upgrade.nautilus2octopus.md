@@ -371,7 +371,7 @@ osd.0    cn1   running (12m)  2m ago     2m   15.2.13  docker.io/ceph/ceph:v15  
 
 # commentaire: le premier node est migré sous octopus avec le support podman sous CT7
 ```
-## Adpotion des autres nodes du cluster
+## Adopotion des autres nodes du cluster
 ```
 # ajouter les nodes suivants
 [vagrant@cn1 ceph]$ ssh root@cn2
@@ -522,4 +522,131 @@ Filesystem      Size  Used Avail Use% Mounted on
 logout
 Connection to cephclt closed.
 [vagrant@cn1 ceph]$ 
+```
+# Ajout d'un nouveau node
+A present vérifiont qu'il soit possible d'agrandir ce cluster avec les commandes cephadm. le nouveau node sera en CentOS8
+```
+[vagrant@cn1 ceph]$ sudo ceph orch host ls
+HOST  ADDR  LABELS  STATUS  
+cn1   cn1                   
+cn2   cn2                   
+cn3   cn3                   
+# remarque : il y a 3 nodes en CT7
+[vagrant@cn1 ceph]$ sudo ceph orch host add cn4
+Error EINVAL: New host cn4 (cn4) failed check: ['systemctl is present', 'lvcreate is present', 'Unit chronyd.service is enabled and running', 'Hostname "cn4" matches what is expected.', "ERROR: Unable to locate any of ['podman', 'docker']"]
+# remarque: il faut préparer le node avant
+[vagrant@cn1 ceph]$ ssh root@cn4
+Last login: Mon May 31 10:01:11 2021 from 192.168.0.11
+[root@cn4 ~]# cat /etc/redhat-release 
+CentOS Linux release 8.3.2011
+[root@cn4 ~]# dnf install https://download.ceph.com/rpm-octopus/el8/noarch/cephadm-15.2.13-0.el8.noarch.rpm
+# remarque : install de podman, runc, python3
+[root@cn4 ~]# cephadm  prepare-host
+Verifying podman|docker is present...
+Verifying lvm2 is present...
+Verifying time synchronization is in place...
+Unit chronyd.service is enabled and running
+Repeating the final host check...
+podman|docker (/usr/bin/podman) is present
+systemctl is present
+lvcreate is present
+Unit chronyd.service is enabled and running
+Host looks OK
+# remarque: ca devrait etre ok maintenant. la clé ssh avait été ajouté précédament.
+[root@cn4 ~]# exit
+logout
+Connection to cn4 closed.
+[vagrant@cn1 ceph]$ sudo ceph orch host add cn4
+Added host 'cn4'
+[vagrant@cn1 ceph]$ sudo ceph orch host ls
+HOST  ADDR  LABELS  STATUS  
+cn1   cn1                   
+cn2   cn2                   
+cn3   cn3                   
+cn4   cn4                   
+[vagrant@cn1 ceph]$ sudo ceph orch apply osd --all-available-devices
+Scheduled osd.all-available-devices update...
+[vagrant@cn1 ceph]$ sudo ceph -w
+  cluster:
+    id:     dbb88f95-1cd6-482a-a735-23c832ee7795
+    health: HEALTH_OK
+ 
+  services:
+    mon: 3 daemons, quorum cn1,cn2,cn3 (age 4h)
+    mgr: cn1(active, since 4h), standbys: cn2, cn3
+    osd: 3 osds: 3 up (since 4h), 3 in (since 14h)
+ 
+  data:
+    pools:   2 pools, 65 pgs
+    objects: 24 objects, 14 MiB
+    usage:   3.1 GiB used, 117 GiB / 120 GiB avail
+    pgs:     65 active+clean
+ 
+
+2021-05-31 10:22:17.657291 mon.cn1 [INF] osd.6 [v2:192.168.0.11:6810/1937893815,v1:192.168.0.11:6811/1937893815] boot
+2021-05-31 10:22:17.657342 mon.cn1 [INF] osd.3 [v2:192.168.0.13:6808/1544026126,v1:192.168.0.13:6809/1544026126] boot
+2021-05-31 10:22:17.657355 mon.cn1 [INF] osd.4 [v2:192.168.0.12:6808/2920888063,v1:192.168.0.12:6809/2920888063] boot
+2021-05-31 10:22:20.847034 mon.cn1 [INF] osd.5 [v2:192.168.0.14:6800/1970775612,v1:192.168.0.14:6801/1970775612] boot
+2021-05-31 10:22:21.830094 mon.cn1 [WRN] Health check failed: Reduced data availability: 2 pgs peering (PG_AVAILABILITY)
+2021-05-31 10:22:23.427665 mon.cn1 [INF] osd.7 [v2:192.168.0.14:6808/4259384539,v1:192.168.0.14:6809/4259384539] boot
+2021-05-31 10:22:24.508468 osd.5 [INF] 1.16 continuing backfill to osd.0 from (0'0,28'94] MIN to 28'94
+2021-05-31 10:22:26.044496 mon.cn1 [WRN] Health check failed: Degraded data redundancy: 1 pg degraded (PG_DEGRADED)
+2021-05-31 10:22:29.266863 mon.cn1 [WRN] Health check update: Reduced data availability: 1 pg peering (PG_AVAILABILITY)
+2021-05-31 10:22:31.384020 mon.cn1 [INF] Health check cleared: PG_AVAILABILITY (was: Reduced data availability: 1 pg peering)
+2021-05-31 10:22:31.385396 mon.cn1 [INF] Health check cleared: PG_DEGRADED (was: Degraded data redundancy: 1 pg degraded)
+2021-05-31 10:22:31.385471 mon.cn1 [INF] Cluster is now healthy
+[vagrant@cn1 ceph]$ sudo ceph orch ls
+NAME                       RUNNING  REFRESHED  AGE  PLACEMENT    IMAGE NAME               IMAGE ID      
+mgr                            3/0  3m ago     -    <unmanaged>  docker.io/ceph/ceph:v15  2cf504fded39  
+mon                            3/0  3m ago     -    <unmanaged>  docker.io/ceph/ceph:v15  2cf504fded39  
+osd.all-available-devices      4/4  3m ago     4m   *            docker.io/ceph/ceph:v15  2cf504fded39  
+[vagrant@cn1 ceph]$ sudo ceph osd tree
+ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
+-1         0.35156  root default                            
+-3         0.08789      host cn1                            
+ 0    hdd  0.03909          osd.0      up   1.00000  1.00000
+ 6    hdd  0.04880          osd.6      up   1.00000  1.00000
+-5         0.08789      host cn2                            
+ 1    hdd  0.03909          osd.1      up   1.00000  1.00000
+ 4    hdd  0.04880          osd.4      up   1.00000  1.00000
+-7         0.08789      host cn3                            
+ 2    hdd  0.03909          osd.2      up   1.00000  1.00000
+ 3    hdd  0.04880          osd.3      up   1.00000  1.00000
+-9         0.08789      host cn4                            
+ 5    hdd  0.03909          osd.5      up   1.00000  1.00000
+ 7    hdd  0.04880          osd.7      up   1.00000  1.00000
+
+[vagrant@cn1 ceph]$ sudo ceph orch ps
+NAME     HOST  STATUS        REFRESHED  AGE  VERSION  IMAGE NAME               IMAGE ID      CONTAINER ID  
+mgr.cn1  cn1   running (2m)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  d78985f2032c  
+mgr.cn2  cn2   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  5e58edab7675  
+mgr.cn3  cn3   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  d9ed52328267  
+mon.cn1  cn1   running (2m)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  4378311bf0b5  
+mon.cn2  cn2   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  9d3ea16eb844  
+mon.cn3  cn3   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  c684ce6ee3a8  
+osd.0    cn1   running (2m)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  442c4c066321  
+osd.1    cn2   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  7151b9932f25  
+osd.2    cn3   running (4h)  2m ago     4h   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  9d2855b02a97  
+osd.3    cn3   running (9m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  1331e87f0f3a  
+osd.4    cn2   running (9m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  44b6c825e91a  
+osd.5    cn4   running (9m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  73d8899f1971  
+osd.6    cn1   running (2m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  eb151c982896  
+osd.7    cn4   running (9m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2cf504fded39  3a34e31ab037  
+[vagrant@cn1 ceph]$ sudo ceph -s
+  cluster:
+    id:     dbb88f95-1cd6-482a-a735-23c832ee7795
+    health: HEALTH_OK
+ 
+  services:
+    mon: 3 daemons, quorum cn1,cn2,cn3 (age 2m)
+    mgr: cn1(active, since 3m), standbys: cn2, cn3
+    osd: 8 osds: 8 up (since 2m), 8 in (since 10m)
+ 
+  data:
+    pools:   2 pools, 65 pgs
+    objects: 24 objects, 14 MiB
+    usage:   8.3 GiB used, 352 GiB / 360 GiB avail
+    pgs:     65 active+clean
+# remarque : il y a bien les 8 osd.
+# remarque : pourquoi ce n'affiche que 4/4 osd dans la commande ceph orch ls, alors qu'il y a bien 8 osd...
 ```
