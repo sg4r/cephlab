@@ -157,13 +157,14 @@ total 12
 # cluster Nautilus ok et un client en version Nautilus a monté une image rbd
 ```
 # Mise a jours vers ceph octopus
-```
-# migration d'un cluster legacy
-#install cephadm
-sudo yum install https://download.ceph.com/rpm-octopus/el7/noarch/cephadm-15.2.13-0.el7.noarch.rpm
-voir documentation
+Avec le changement d'outils de management du cluster Ceph de ceph-deploy qui est en python2 vers cehadm codé en python3, l'équipe Ceph a rejouter de nouvelles fonctionnalitées tres intéréssantes que l'on va découvrir ici.
+## Documentation
+Pour plus d'information voir la documentation officiel.
 https://docs.ceph.com/en/latest/cephadm/adoption/
-
+## Première étape, cephadm
+```
+#install cephadm
+[vagrant@cn1 ceph]$ sudo yum install https://download.ceph.com/rpm-octopus/el7/noarch/cephadm-15.2.13-0.el7.noarch.rpm
 [vagrant@cn1 ceph]$ sudo ceph config assimilate-conf -i /etc/ceph/ceph.conf
 
 [global]
@@ -252,7 +253,7 @@ Chowning /var/lib/ceph/dbb88f95-1cd6-482a-a735-23c832ee7795/osd.0/block...
 Disabling host unit ceph-volume@ lvm unit...
 Moving logs...
 Creating new units...
-# verification
+# vérification
 
 [vagrant@cn1 ceph]$ sudo cephadm ls
 [
@@ -371,7 +372,7 @@ osd.0    cn1   running (12m)  2m ago     2m   15.2.13  docker.io/ceph/ceph:v15  
 
 # commentaire: le premier node est migré sous octopus avec le support podman sous CT7
 ```
-## Adopotion des autres nodes du cluster
+## Adoption des autres nodes du cluster
 ```
 # ajouter les nodes suivants
 [vagrant@cn1 ceph]$ ssh root@cn2
@@ -524,7 +525,7 @@ Connection to cephclt closed.
 [vagrant@cn1 ceph]$ 
 ```
 # Ajout d'un nouveau node
-A present vérifiont qu'il soit possible d'agrandir ce cluster avec les commandes cephadm. le nouveau node sera en CentOS8
+A présent vérifiont qu'il soit possible d'agrandir ce cluster avec les commandes cephadm. le nouveau node sera en CentOS8
 ```
 [vagrant@cn1 ceph]$ sudo ceph orch host ls
 HOST  ADDR  LABELS  STATUS  
@@ -648,5 +649,5 @@ osd.7    cn4   running (9m)  2m ago     9m   15.2.13  docker.io/ceph/ceph:v15  2
     usage:   8.3 GiB used, 352 GiB / 360 GiB avail
     pgs:     65 active+clean
 # remarque : il y a bien les 8 osd.
-# remarque : pourquoi ce n'affiche que 4/4 osd dans la commande ceph orch ls, alors qu'il y a bien 8 osd...
+# remarque : pourquoi cela n'affiche que 4/4 osd dans la commande ceph orch ls, alors qu'il y a bien 8 osd...
 ```
