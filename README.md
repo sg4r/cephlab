@@ -1,5 +1,5 @@
-# Ceph-octopus Lab
-Matériel pour commencer à jouer avec Ceph. Le lab virtuel Vagrant contient un environnement pour installer et configurer un cluster Ceph en version octopus en quelques étapes accompagné de commentaires pour vous guider à chaque étape. ces informations ne sont pas une procédure d'installation automatisée pour une utilisation en production. 
+# Cephlab
+Ce lab virtuel Vagrant contient un environnement pour installer et configurer un cluster Ceph en version octopus en quelques étapes accompagné de commentaires pour vous guider à chaque étape. ces informations ne sont pas une procédure d'installation automatisée pour une utilisation en production. Vous trouverez les différentes étapes configurer les services RBD, CEPFS, S3, un Dashboard avec prometheus et grafana, ainsi que la mise en HA de 2 RGW. 
 ## Installation de vagrant et libvirt sur votre poste Ubuntu
 ```
 sudo apt-get install virt-manager
