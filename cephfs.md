@@ -95,3 +95,10 @@ Filesystem                                             Size  Used Avail Use% Mou
 ```
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/cephfs/
+- le module de gestion des snapshots https://docs.ceph.com/en/latest/cephfs/snap-schedule/
+- le module de gestion des replications CephFS https://docs.ceph.com/en/latest/cephfs/cephfs-mirroring/
+- gestion de plusieurs pools avec le layout https://docs.ceph.com/en/latest/cephfs/file-layouts/
+
+
+
+
