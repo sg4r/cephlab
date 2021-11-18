@@ -22,7 +22,7 @@ vagrant status
 #connexion au premier node
 vagrant ssh cn1
 #configuration de tous les nodes Ceph
-[vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i dnf install -y podman; done
+[vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i dnf install -y podman lvm2; done
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i systemctl stop firewalld.service; done
 [vagrant@cn1 ~]$ for i in {1..4}; do ssh root@cn$i systemctl disable firewalld.service; done
 ```
