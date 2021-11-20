@@ -76,6 +76,7 @@ total 16
 ```
 ## Montage et démontage manuel CephFS
 ```
+[root@cephclt ~]# mkdir /mnt/moncfs
 [root@cephclt ~]# mount -t ceph cn1,cn2,cn3,cn4:/ /mnt/moncfs -o name=cephclt
 [root@cephclt ~]# df -h /mnt/moncfs
 Filesystem                                             Size  Used Avail Use% Mounted on
