@@ -116,6 +116,38 @@ getfattr -n ceph.quota.max_bytes /rep/autre
 getfattr -n ceph.quota.max_files /rep/autre
 # Pour supprimer un quota, exécutez :
 setfattr -n ceph.quota.max_bytes -v 0 /rep/autre
+setfattr -n ceph.quota.max_files -v 0 /rep/autre
+```
+Appliquer un quota de 2Go à rep1
+```
+[ftceph@deploy ceph]$ ssh ceph1
+[ftceph@deploy ~]$ sudo -i
+[root@deploy ~]# yum -y install attr
+[root@deploy ~]# setfattr -n ceph.quota.max_bytes -v 2000000000 /mnt/cfs/rep1/
+[root@deploy ~]# getfattr -n ceph.quota.max_bytes /mnt/cfs/rep1/
+# file: mnt/cfs/rep1/
+ceph.quota.max_bytes="2000000000"
+[root@ceph1 ~]# exit
+logout
+[ftceph@ceph1 ~]$ exit
+logout
+Connection to ceph1 closed.
+# vérification de la valeur du quota
+[ftceph@deploy ~]$ df -h /opt/cfsrep1/
+Filesystem Size Used Avail Use% Mounted on
+172.16.7.42,172.16.7.11,172.16.7.44:/rep1 1.9G 0 1.9G 0% /opt/cfsrep1
+
+# vérification de la limite d’écriture
+[ftceph@deploy ~]$ mkdir /opt/cfsrep1/ftceph
+[ftceph@deploy ~]$ dd if=/dev/zero of=/opt/cfsrep1/ftceph/ddfile bs=1G count=1 oflag=direct
+1+0 records in
+1+0 records out
+1073741824 bytes (1.1 GB) copied, 12.4922 s, 86.0 MB/s
+[ftceph@deploy ~]$ dd if=/dev/zero of=/opt/cfsrep1/ftceph/ddfile bs=2G count=1 oflag=direct
+dd: error writing ‘/opt/cfsrep1/ftceph/ddfile’: Disk quota exceeded
+0+1 records in
+0+0 records out
+0 bytes (0 B) copied, 0.648858 s, 0.0 kB/s
 ```
 Pour plus d'information sur les quotas voir https://docs.ceph.com/en/latest/cephfs/quota/
 ## Documentation
