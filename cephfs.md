@@ -94,6 +94,30 @@ cn1,cn2,cn3,cn4:/ /mnt/moncfs ceph name=cephclt,noatime,_netdev 0 2
 Filesystem                                             Size  Used Avail Use% Mounted on
 192.168.0.11,192.168.0.12,192.168.0.13,192.168.0.14:/  111G     0  111G   0% /mnt/moncfs
 ```
+## Définition des quotas
+CephFS permet de définir des quotas sur n'importe quel répertoire. Le quota peut restreindre le nombre d'octets ou le nombre de fichiers stockés sous ce répertoires. Pour définir un quota à un repertoire, il est nécéssaire d'utiliser la clé ```ceph.client.admin.keyring```.  Par défaut seulement ce compte à les authorisations nécéssaires.
+
+Les quotas dans CephFS ont des limites :
+- Les quotas sont coopératifs et non concurrentiels. Les quotas Ceph s'appuient sur le client qui monte le
+système de fichiers pour arrêter l’écriture lorsqu'une limite est atteinte.
+- Les quotas sont imprécis. Les processus qui écrivent sur le système de fichiers seront arrêtés peu de temps
+après que la limite du quota aura été atteinte.
+- Les quotas sont implémentés dans le kernel du client à partir de la version 4.17. Les quotas sont pris en
+charge par le client de l'espace utilisateur (libcephfs, ceph-fuse).
+- Le cluster doit être dans une version mimic ou plus récente. Les anciens clients ne prennent pas en charge
+les quotas.
+```
+# Pour définir un quota de 100 Mo, exécutez :
+setfattr -n ceph.quota.max_bytes -v 100000000 /rep/autre
+# Pour définir un quota de 10 000 fichiers, exécutez :
+setfattr -n ceph.quota.max_files -v 10000 /rep/autre
+# Pour afficher la configuration de quota, exécutez :
+getfattr -n ceph.quota.max_bytes /rep/autre
+getfattr -n ceph.quota.max_files /rep/autre
+# Pour supprimer un quota, exécutez :
+setfattr -n ceph.quota.max_bytes -v 0 /rep/autre
+```
+Pour plus d'information sur les quotas voir https://docs.ceph.com/en/latest/cephfs/quota/
 ## Documentation
 Pour plus d’information voir https://docs.ceph.com/en/latest/cephfs/
 - le module de gestion des snapshots https://docs.ceph.com/en/latest/cephfs/snap-schedule/
