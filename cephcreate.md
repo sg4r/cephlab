@@ -4,7 +4,56 @@ cephadm est un outil pour déployer et gérer un cluster Ceph par connexion aux 
 cephadm est le nouvel outil de gestion d'un cluster Ceph fourni à partir de la version Octopus v15.2.0 et ne prend pas en charge les anciennes versions de Ceph. Il est possible de migrer les anciennes instances vers cephadmin. cephadmin remplace ceph-deploy utilisé dans les anciennes version de Ceph.
 ## Installation du cluster Ceph avec cephadm
 ```
-[vagrant@cn1 ~]$ sudo yum -y install https://download.ceph.com/rpm-15.2.7/el8/x86_64/cephadm-15.2.7-0.el8.x86_64.rpm
+[vagrant@cn1 ~]$ sudo yum -y install https://download.ceph.com/rpm-15.2.10/el8/noarch/cephadm-15.2.10-0.el8.noarch.rpm
+Failed to set locale, defaulting to C.UTF-8
+Last metadata expiration check: 0:00:33 ago on Tue Mar 22 21:04:34 2022.
+cephadm-15.2.10-0.el8.noarch.rpm                       48 kB/s |  58 kB     00:01    
+Dependencies resolved.
+======================================================================================
+ Package       Arch     Version                                  Repository      Size
+======================================================================================
+Installing:
+ cephadm       noarch   2:15.2.10-0.el8                          @commandline    58 k
+Installing dependencies:
+ python3-pip   noarch   9.0.3-20.el8.rocky.0                     appstream       19 k
+ python36      x86_64   3.6.8-38.module+el8.5.0+671+195e4563     appstream       18 k
+Enabling module streams:
+ python36               3.6                                                          
+
+Transaction Summary
+======================================================================================
+Install  3 Packages
+
+Total size: 95 k
+Total download size: 37 k
+Installed size: 235 k
+Downloading Packages:
+(1/2): python3-pip-9.0.3-20.el8.rocky.0.noarch.rpm     99 kB/s |  19 kB     00:00    
+(2/2): python36-3.6.8-38.module+el8.5.0+671+195e4563.  91 kB/s |  18 kB     00:00    
+--------------------------------------------------------------------------------------
+Total                                                  45 kB/s |  37 kB     00:00     
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                              1/1 
+  Installing       : python36-3.6.8-38.module+el8.5.0+671+195e4563.x86_64         1/3 
+  Running scriptlet: python36-3.6.8-38.module+el8.5.0+671+195e4563.x86_64         1/3 
+  Installing       : python3-pip-9.0.3-20.el8.rocky.0.noarch                      2/3 
+  Running scriptlet: cephadm-2:15.2.10-0.el8.noarch                               3/3 
+  Installing       : cephadm-2:15.2.10-0.el8.noarch                               3/3 
+  Running scriptlet: cephadm-2:15.2.10-0.el8.noarch                               3/3 
+  Verifying        : python3-pip-9.0.3-20.el8.rocky.0.noarch                      1/3 
+  Verifying        : python36-3.6.8-38.module+el8.5.0+671+195e4563.x86_64         2/3 
+  Verifying        : cephadm-2:15.2.10-0.el8.noarch                               3/3 
+
+Installed:
+  cephadm-2:15.2.10-0.el8.noarch                                                      
+  python3-pip-9.0.3-20.el8.rocky.0.noarch                                             
+  python36-3.6.8-38.module+el8.5.0+671+195e4563.x86_64                                
+
+Complete!
 [vagrant@cn1 ~]$ sudo mkdir -p /etc/ceph
 [vagrant@cn1 ~]$ sudo cephadm bootstrap --mon-ip 192.168.111.11
 Verifying podman|docker is present...
@@ -17,10 +66,10 @@ systemctl is present
 lvcreate is present
 Unit chronyd.service is enabled and running
 Host looks OK
-Cluster fsid: c9eacd34-513d-11eb-9233-5254009e5678
-Verifying IP 192.168.0.11 port 3300 ...
-Verifying IP 192.168.0.11 port 6789 ...
-Mon IP 192.168.0.11 is in CIDR network 192.168.111.0/24
+Cluster fsid: d3232dac-aa23-11ec-b513-5254004e3b60
+Verifying IP 192.168.111.11 port 3300 ...
+Verifying IP 192.168.111.11 port 6789 ...
+Mon IP 192.168.111.11 is in CIDR network 192.168.111.0/24
 Pulling container image docker.io/ceph/ceph:v15...
 Extracting ceph user uid/gid from container image...
 Creating initial keys...
@@ -72,11 +121,11 @@ Ceph Dashboard is now available at:
 
 	     URL: https://cn1:8443/
 	    User: admin
-	Password: byxc7x3leo
+	Password: 1qk7yr3ksx
 
 You can access the Ceph CLI with:
 
-	sudo ./cephadm shell --fsid 2e90db8c-541a-11eb-bb6e-525400ae1f18 -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.client.admin.keyring
+	sudo /sbin/cephadm shell --fsid d3232dac-aa23-11ec-b513-5254004e3b60 -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.client.admin.keyring
 
 Please consider enabling telemetry to help improve Ceph:
 
@@ -95,30 +144,34 @@ Bootstrap complete.
 [vagrant@cn1 ~]$ for i in {2..4}; do ssh-copy-id -f -i /etc/ceph/ceph.pub root@cn$i; done
 
 # Connexion au cluster ceph
-[vagrant@cn1 ~]$ sudo ./cephadm shell 
-Inferring fsid 2e90db8c-541a-11eb-bb6e-525400ae1f18
-Inferring config /var/lib/ceph/2e90db8c-541a-11eb-bb6e-525400ae1f18/mon.cn1/config
-Using recent ceph image docker.io/ceph/ceph:v15
+[vagrant@cn1 ~]$ sudo cephadm shell 
+Inferring fsid d3232dac-aa23-11ec-b513-5254004e3b60
+Inferring config /var/lib/ceph/d3232dac-aa23-11ec-b513-5254004e3b60/mon.cn1/config
+Using recent ceph image docker.io/ceph/ceph@sha256:056637972a107df4096f10951e4216b21fcd8ae0b9fb4552e628d35df3f61139
+[ceph: root@cn1 /]# 
 
 # Remarque  : on passe dans le conteneur. Attention au changement de shell en [ceph: root@cn1 /]
 
-[ceph: root@cn1 /]#  ceph -s
+[ceph: root@cn1 /]# ceph -s
   cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
+    id:     d3232dac-aa23-11ec-b513-5254004e3b60
     health: HEALTH_WARN
+            mon is allowing insecure global_id reclaim
             OSD count 0 < osd_pool_default_size 3
  
   services:
-    mon: 1 daemons, quorum cn1 (age 5m)
-    mgr: cn1.pnzyvw(active, since 5m)
+    mon: 1 daemons, quorum cn1 (age 4m)
+    mgr: cn1.lgzsul(active, since 3m)
     osd: 0 osds: 0 up, 0 in
  
   data:
     pools:   0 pools, 0 pgs
     objects: 0 objects, 0 B
     usage:   0 B used, 0 B / 0 B avail
-    pgs:  
-    
+    pgs:     
+ 
+[ceph: root@cn1 /]# 
+
 # Remarque : Le cluster est en warring au début, car il n'y a pas encore d'osd ou plusieurs mon, mais on va rêgler cela rapidement
 
 [ceph: root@cn1 /]# cat /etc/redhat-release 
