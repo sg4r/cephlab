@@ -142,6 +142,8 @@ Bootstrap complete.
 
 # Ajout ssh ceph.pub key sur les nodes 2 à 4
 [vagrant@cn1 ~]$ for i in {2..4}; do ssh-copy-id -f -i /etc/ceph/ceph.pub root@cn$i; done
+# Ajout cephadm sur tous les nodes 2 à 4
+[vagrant@cn1 ~]$ for i in {2..4}; do ssh root@cn$i dnf  -y install https://download.ceph.com/rpm-15.2.10/el8/noarch/cephadm-15.2.10-0.el8.noarch.rpm; done
 
 # Connexion au cluster ceph
 [vagrant@cn1 ~]$ sudo cephadm shell 
