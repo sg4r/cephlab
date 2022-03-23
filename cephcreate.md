@@ -210,14 +210,14 @@ prometheus         1/1  51s ago    7m   count:1    docker.io/prom/prometheus:v2.
 # Surveillons les modifications au niveau du cluster 
 [ceph: root@cn1 /]# ceph -w
   cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
+    id:     d3232dac-aa23-11ec-b513-5254004e3b60
     health: HEALTH_WARN
-            failed to probe daemons or devices
+            mon is allowing insecure global_id reclaim
             OSD count 0 < osd_pool_default_size 3
  
   services:
-    mon: 1 daemons, quorum cn1 (age 10m)
-    mgr: cn1.pnzyvw(active, since 10m), standbys: cn2.rkgnmp
+    mon: 1 daemons, quorum cn1 (age 14m)
+    mgr: cn1.lgzsul(active, since 14m)
     osd: 0 osds: 0 up, 0 in
  
   data:
@@ -227,22 +227,32 @@ prometheus         1/1  51s ago    7m   count:1    docker.io/prom/prometheus:v2.
     pgs:     
  
 
-2021-01-11T14:49:03.762707+0000 mon.cn1 [INF] mon.cn1 calling monitor election
-2021-01-11T14:49:05.680296+0000 mon.cn3 [INF] mon.cn3 calling monitor election
-2021-01-11T14:49:08.820774+0000 mon.cn1 [INF] mon.cn1 is new leader, mons cn1,cn3 in quorum (ranks 0,1)
-2021-01-11T14:49:08.897971+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN failed to probe daemons or devices; OSD count 0 < osd_pool_default_size 3
-2021-01-11T14:49:08.898046+0000 mon.cn1 [WRN] [WRN] CEPHADM_REFRESH_FAILED: failed to probe daemons or devices
-2021-01-11T14:49:08.898062+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
-2021-01-11T14:49:09.118427+0000 mon.cn1 [INF] mon.cn1 calling monitor election
-2021-01-11T14:49:09.140783+0000 mon.cn3 [INF] mon.cn3 calling monitor election
-2021-01-11T14:49:11.104706+0000 mon.cn2 [INF] mon.cn2 calling monitor election
-2021-01-11T14:49:14.161148+0000 mon.cn1 [INF] mon.cn1 is new leader, mons cn1,cn3,cn2 in quorum (ranks 0,1,2)
-2021-01-11T14:49:14.234202+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN failed to probe daemons or devices; OSD count 0 < osd_pool_default_size 3
-2021-01-11T14:49:14.234224+0000 mon.cn1 [WRN] [WRN] CEPHADM_REFRESH_FAILED: failed to probe daemons or devices
-2021-01-11T14:49:14.234229+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
-2021-01-11T14:49:30.890447+0000 mon.cn1 [INF] Health check cleared: CEPHADM_REFRESH_FAILED (was: failed to probe daemons or devices)
-2021-01-11T14:50:00.004693+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN OSD count 0 < osd_pool_default_size 3
-2021-01-11T14:50:00.004792+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:49:11.711857+0000 mon.cn1 [INF] mon.cn1 calling monitor election
+2022-03-22T22:49:13.715668+0000 mon.cn2 [INF] mon.cn2 calling monitor election
+2022-03-22T22:49:16.777530+0000 mon.cn1 [INF] mon.cn1 is new leader, mons cn1,cn2 in quorum (ranks 0,1)
+2022-03-22T22:49:16.858114+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN mon is allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:49:16.858197+0000 mon.cn1 [WRN] [WRN] AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED: mon is allowing insecure global_id reclaim
+2022-03-22T22:49:16.858213+0000 mon.cn1 [WRN]     mon.cn1 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-22T22:49:16.858225+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:49:17.747510+0000 mon.cn1 [INF] mon.cn1 calling monitor election
+2022-03-22T22:49:17.806623+0000 mon.cn2 [INF] mon.cn2 calling monitor election
+2022-03-22T22:49:19.724439+0000 mon.cn3 [INF] mon.cn3 calling monitor election
+2022-03-22T22:49:22.800376+0000 mon.cn1 [INF] mon.cn1 is new leader, mons cn1,cn2,cn3 in quorum (ranks 0,1,2)
+2022-03-22T22:49:22.893486+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN mon is allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:49:22.893639+0000 mon.cn1 [WRN] [WRN] AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED: mon is allowing insecure global_id reclaim
+2022-03-22T22:49:22.893659+0000 mon.cn1 [WRN]     mon.cn1 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-22T22:49:22.893673+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:49:26.799057+0000 mon.cn1 [WRN] Health check update: mons are allowing insecure global_id reclaim (AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED)
+2022-03-22T22:50:00.000381+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN mons are allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T22:50:00.000460+0000 mon.cn1 [WRN] [WRN] AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED: mons are allowing insecure global_id reclaim
+2022-03-22T22:50:00.000479+0000 mon.cn1 [WRN]     mon.cn1 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-22T22:50:00.000495+0000 mon.cn1 [WRN]     mon.cn2 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-22T22:50:00.000513+0000 mon.cn1 [WRN]     mon.cn3 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-22T22:50:00.000537+0000 mon.cn1 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
+2022-03-22T23:00:00.000368+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T23:10:00.000332+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T23:20:00.000324+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
+2022-03-22T23:30:00.000314+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim; OSD count 0 < osd_pool_default_size 3
 
 
 # au bout de 3 minutes, on retrouve bien 4/4 service crash, 3/5 mon, 4/4 node-exporter 
@@ -257,15 +267,15 @@ node-exporter      4/4  65s ago    13m  *          docker.io/prom/node-exporter:
 prometheus         1/1  63s ago    13m  count:1    docker.io/prom/prometheus:v2.18.1     de242295e225  
 
 # le cluster Ceph est toujours en warring, mais il a maintenant 3 moniteurs et 2 mgr
-[ceph: root@cn1 /]# ceph -s
   cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
+    id:     d3232dac-aa23-11ec-b513-5254004e3b60
     health: HEALTH_WARN
+            mons are allowing insecure global_id reclaim
             OSD count 0 < osd_pool_default_size 3
  
   services:
-    mon: 3 daemons, quorum cn1,cn3,cn2 (age 2m)
-    mgr: cn1.pnzyvw(active, since 14m), standbys: cn2.rkgnmp
+    mon: 3 daemons, quorum cn1,cn2,cn3 (age 7h)
+    mgr: cn1.lgzsul(active, since 9h), standbys: cn2.nbvlgl
     osd: 0 osds: 0 up, 0 in
  
   data:
@@ -273,7 +283,7 @@ prometheus         1/1  63s ago    13m  count:1    docker.io/prom/prometheus:v2.
     objects: 0 objects, 0 B
     usage:   0 B used, 0 B / 0 B avail
     pgs:     
-         
+
 # ajoutons des disques au cluster, mais avant cela listons l'ensemble des disques libres existants
 [ceph: root@cn1 /]# ceph orch device ls
 Hostname  Path      Type  Serial  Size   Health   Ident  Fault  Available  
@@ -293,34 +303,61 @@ Scheduled osd.all-available-devices update...
 # surveillons les modifications du Cluster
 [ceph: root@cn1 /]# ceph -w
   cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
+    id:     d3232dac-aa23-11ec-b513-5254004e3b60
     health: HEALTH_WARN
-            failed to probe daemons or devices
+            mons are allowing insecure global_id reclaim
+            OSD count 0 < osd_pool_default_size 3
  
   services:
-    mon: 3 daemons, quorum cn1,cn3,cn2 (age 6m)
-    mgr: cn1.pnzyvw(active, since 18m), standbys: cn2.rkgnmp
-    osd: 8 osds: 0 up, 0 in
+    mon: 3 daemons, quorum cn1,cn2,cn3 (age 7h)
+    mgr: cn1.lgzsul(active, since 9h), standbys: cn2.nbvlgl
+    osd: 1 osds: 0 up, 0 in
  
   data:
-    pools:   1 pools, 1 pgs
+    pools:   0 pools, 0 pgs
     objects: 0 objects, 0 B
     usage:   0 B used, 0 B / 0 B avail
-    pgs:     100.000% pgs unknown
-             1 unknown
+    pgs:     
  
 
-2021-01-11T14:55:42.462132+0000 mon.cn1 [INF] osd.1 [v2:192.168.0.13:6800/3357115903,v1:192.168.0.13:6801/3357115903] boot
-2021-01-11T14:55:42.462189+0000 mon.cn1 [INF] osd.0 [v2:192.168.0.14:6800/3301640803,v1:192.168.0.14:6801/3301640803] boot
-2021-01-11T14:55:43.489327+0000 mon.cn1 [INF] osd.2 [v2:192.168.0.12:6800/1513505846,v1:192.168.0.12:6801/1513505846] boot
-2021-01-11T14:55:44.516120+0000 mon.cn1 [INF] osd.3 [v2:192.168.0.11:6802/475127529,v1:192.168.0.11:6803/475127529] boot
-2021-01-11T14:55:45.552359+0000 mon.cn1 [INF] osd.4 [v2:192.168.0.14:6808/2752264528,v1:192.168.0.14:6809/2752264528] boot
-2021-01-11T14:55:46.573267+0000 mon.cn1 [INF] osd.6 [v2:192.168.0.13:6808/3030442383,v1:192.168.0.13:6809/3030442383] boot
-2021-01-11T14:55:47.608346+0000 mon.cn1 [INF] osd.5 [v2:192.168.0.12:6808/3117922813,v1:192.168.0.12:6809/3117922813] boot
-2021-01-11T14:55:48.695563+0000 mon.cn1 [INF] osd.7 [v2:192.168.0.11:6810/4205497031,v1:192.168.0.11:6811/4205497031] boot
-2021-01-11T14:55:54.989466+0000 mon.cn1 [INF] Health check cleared: CEPHADM_REFRESH_FAILED (was: failed to probe daemons or devices)
-2021-01-11T14:55:54.989528+0000 mon.cn1 [INF] Cluster is now healthy
+2022-03-23T06:37:52.279764+0000 mon.cn3 [INF] mon.cn3 calling monitor election
+2022-03-23T06:37:52.296307+0000 mon.cn2 [INF] mon.cn2 calling monitor election
+2022-03-23T06:37:57.324534+0000 mon.cn2 [INF] mon.cn2 is new leader, mons cn2,cn3 in quorum (ranks 1,2)
+2022-03-23T06:37:57.349617+0000 mon.cn2 [WRN] Health check failed: 1/3 mons down, quorum cn2,cn3 (MON_DOWN)
+2022-03-23T06:37:57.369295+0000 mon.cn2 [WRN] Health detail: HEALTH_WARN mons are allowing insecure global_id reclaim; 1/3 mons down, quorum cn2,cn3; OSD count 0 < osd_pool_default_size 3
+2022-03-23T06:37:57.369354+0000 mon.cn2 [WRN] [WRN] AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED: mons are allowing insecure global_id reclaim
+2022-03-23T06:37:57.369363+0000 mon.cn2 [WRN]     mon.cn2 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-23T06:37:57.369406+0000 mon.cn2 [WRN]     mon.cn3 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-23T06:37:57.369428+0000 mon.cn2 [WRN] [WRN] MON_DOWN: 1/3 mons down, quorum cn2,cn3
+2022-03-23T06:37:57.369435+0000 mon.cn2 [WRN]     mon.cn1 (rank 0) addr [v2:192.168.111.11:3300/0,v1:192.168.111.11:6789/0] is down (out of quorum)
+2022-03-23T06:37:57.369441+0000 mon.cn2 [WRN] [WRN] TOO_FEW_OSDS: OSD count 0 < osd_pool_default_size 3
+2022-03-23T06:37:57.410892+0000 mon.cn2 [WRN] Health check update: OSD count 1 < osd_pool_default_size 3 (TOO_FEW_OSDS)
+2022-03-23T06:37:59.201999+0000 mon.cn2 [INF] Health check cleared: TOO_FEW_OSDS (was: OSD count 1 < osd_pool_default_size 3)
+2022-03-23T06:37:55.541791+0000 mon.cn1 [INF] mon.cn1 calling monitor election
+2022-03-23T06:38:00.353154+0000 mon.cn3 [INF] mon.cn3 calling monitor election
+2022-03-23T06:38:00.356380+0000 mon.cn1 [INF] mon.cn1 calling monitor election
+2022-03-23T06:38:00.356967+0000 mon.cn2 [INF] mon.cn2 calling monitor election
+2022-03-23T06:38:00.367522+0000 mon.cn1 [INF] mon.cn1 is new leader, mons cn1,cn2,cn3 in quorum (ranks 0,1,2)
+2022-03-23T06:38:00.393294+0000 mon.cn1 [INF] Health check cleared: MON_DOWN (was: 1/3 mons down, quorum cn2,cn3)
+2022-03-23T06:38:00.408420+0000 mon.cn1 [WRN] Health detail: HEALTH_WARN mons are allowing insecure global_id reclaim
+2022-03-23T06:38:00.408441+0000 mon.cn1 [WRN] [WRN] AUTH_INSECURE_GLOBAL_ID_RECLAIM_ALLOWED: mons are allowing insecure global_id reclaim
+2022-03-23T06:38:00.408445+0000 mon.cn1 [WRN]     mon.cn1 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-23T06:38:00.408449+0000 mon.cn1 [WRN]     mon.cn2 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-23T06:38:00.408452+0000 mon.cn1 [WRN]     mon.cn3 has auth_allow_insecure_global_id_reclaim set to true
+2022-03-23T06:38:09.529002+0000 mon.cn1 [INF] osd.0 [v2:192.168.111.13:6800/1230560976,v1:192.168.111.13:6801/1230560976] boot
+2022-03-23T06:38:11.581373+0000 mon.cn1 [INF] osd.2 [v2:192.168.111.14:6800/2254200292,v1:192.168.111.14:6801/2254200292] boot
+2022-03-23T06:38:12.607737+0000 mon.cn1 [INF] osd.4 [v2:192.168.111.13:6808/2412124976,v1:192.168.111.13:6809/2412124976] boot
+2022-03-23T06:38:13.616896+0000 mon.cn1 [INF] osd.1 [v2:192.168.111.12:6800/2626008572,v1:192.168.111.12:6801/2626008572] boot
+2022-03-23T06:38:14.243023+0000 mon.cn1 [INF] osd.5 [v2:192.168.111.14:6808/2854343695,v1:192.168.111.14:6809/2854343695] boot
+2022-03-23T06:38:14.243044+0000 mon.cn1 [INF] osd.3 [v2:192.168.111.11:6802/4039541501,v1:192.168.111.11:6803/4039541501] boot
+2022-03-23T06:38:15.288383+0000 mon.cn1 [INF] osd.6 [v2:192.168.111.12:6808/1556197905,v1:192.168.111.12:6809/1556197905] boot
+2022-03-23T06:38:17.505732+0000 mon.cn1 [INF] osd.7 [v2:192.168.111.11:6810/262489380,v1:192.168.111.11:6811/262489380] boot
+2022-03-23T06:40:00.000380+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim
+2022-03-23T06:50:00.000508+0000 mon.cn1 [WRN] overall HEALTH_WARN mons are allowing insecure global_id reclaim
 
+# les osd sont créé et intrégré dans le cluster.
+# il reste un warning. il devrais être possible d'activer cette fonction plutot. 
+[ceph: root@cn1 /]# ceph config set mon auth_allow_insecure_global_id_reclaim false
 
 # vérification des disques utilisés par le cluster
 [ceph: root@cn1 /]# ceph osd tree
@@ -340,21 +377,22 @@ ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
  4    hdd  0.04880          osd.4      up   1.00000  1.00000
 
 # vérifions le status du cluster. C'est ok, on a bien 8 osds dans le cluster avec 4 nodes.
-[ceph: root@cn1 /]# ceph -s
+[ceph: root@cn1 /]# ceph -w
   cluster:
-    id:     2e90db8c-541a-11eb-bb6e-525400ae1f18
+    id:     d3232dac-aa23-11ec-b513-5254004e3b60
     health: HEALTH_OK
  
   services:
-    mon: 3 daemons, quorum cn1,cn3,cn2 (age 7m)
-    mgr: cn1.pnzyvw(active, since 19m), standbys: cn2.rkgnmp
-    osd: 8 osds: 8 up (since 71s), 8 in (since 71s)
+    mon: 3 daemons, quorum cn1,cn2,cn3 (age 22m)
+    mgr: cn1.lgzsul(active, since 9h), standbys: cn2.nbvlgl
+    osd: 8 osds: 8 up (since 21m), 8 in (since 21m)
  
   data:
     pools:   1 pools, 1 pgs
     objects: 0 objects, 0 B
     usage:   8.0 GiB used, 352 GiB / 360 GiB avail
     pgs:     1 active+clean
+ 
 
 # Remarque : Le cluster est maintenant ok, et prêt pour la configuration des pools
 ```
