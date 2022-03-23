@@ -42,7 +42,7 @@ Pour supprimer les vms ou tout simplement faire le ménage avant de refaire une 
 vagrant destroy
 # si vous voulez tout supprimer
 cd ..
-rm -fr ./ceph-octopus
+rm -fr ./cephlab
 ```
 ## Evolutions
 Les évolutions concernant ce lab sont :
