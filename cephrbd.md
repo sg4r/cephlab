@@ -2,7 +2,7 @@ Le système de stockage en mode bloc de Ceph permet de monter une image RBD (RAD
 périphérique de type bloc. Quand une application écrit des données sur Ceph en utilisant un périphérique de bloc,
 Ceph entrelace et réplique les données à travers le cluster automatiquement. Ceph RBD est généralement utilisé
 pour les disques de machines virtuelles.
-![ceph-dashboard](https://docs.ceph.com/en/latest/_images/274b3a8c6be03027e4cbcc949e348d05010b41856c98f7a97992ff7bacfc27da.png)
+![ceph-dashboard](cephrbd.png)
 
 La commande **rbd** vous permet de créer, d’afficher ou de modifier les informations et de supprimer des images RBD.
 Vous pouvez également l'utiliser pour la gestion des snapshots ou des fonctions de clonage des images.
