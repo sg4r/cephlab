@@ -365,7 +365,7 @@ Removing snap: 100% complete...done.
 ```
 
 ## rbd live migration
-Lors de la création d'un pool, il est nécéssaire de finir celui-ci en mode réplication ou en mode erasure. Si vous devez changer de type de paramètre, il est nécéssaire de migrer les données vers un autre pool avec minimun de temps d'indisponiblité.
+Lors de la création d'un pool, il est nécéssaire définir celui-ci en mode réplication ou en mode erasure. Si vous devez changer de type de paramètre, il est nécéssaire de migrer les données vers un autre pool avec minimun de temps d'indisponiblité.
 
 Pour cela nous allons utiliser les commandes "rbd migration"
 
@@ -380,12 +380,12 @@ Le processus de migration se déroule en trois étapes :
 en resumé:
 1) arrêté l'acces a l'image
 2) pour une migration vers un pool en replication :
-rbd migration prepare SRC_POOL/IMAGE TARGET_POOL/IMAGE
+```bd migration prepare SRC_POOL/IMAGE TARGET_POOL/IMAGE```
 ou pour une migration vers un pool EC 
-rbd migration prepare SRC_POOL/IMAGE --data-pool TARGET_POOL/IMAGE
+```rbd migration prepare SRC_POOL/IMAGE --data-pool TARGET_POOL/IMAGE```
 3) le client peux remonté l'image depuis target pool.
-4) rbd migration execute SRC_POOL/IMAGE # migration en arriere plan
-5) rbd migration commit SRC_POOL/IMAGE  # valide la migration
+4) ```rbd migration execute SRC_POOL/IMAGE``` # migration en arriere plan
+5) ```rbd migration commit SRC_POOL/IMAGE```  # valide la migration
 
 Dans le TP précédant, on a utiliser un disque distant prbd/foo en repliquation. nous allons migrer vers le pool prbdec.
 
