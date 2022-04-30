@@ -45,6 +45,9 @@ vagrant destroy
 cd ..
 rm -fr ./cephlab
 ```
+## Changements
+- ajout de [rbd live migration](cephrbd.md#rbd-live-migration)
+- début de [ceph-mirror](ceph-mirror.md)
 ## Evolutions
 Les évolutions concernant ce lab sont :
 - Pool Erasure code pour rgw
