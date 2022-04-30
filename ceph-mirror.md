@@ -17,7 +17,7 @@ Réplication unidirectionnelle : Lorsque les données sont mises en miroir uniqu
 Réplication bidirectionnelle : Lorsque les données sont mises en miroir à partir des images primaires d’un cluster vers le cluster secondaire et inversement. 
 Il n’est possible que de réaliser une réplication par sélection d’une série image RBD depuis un ou plusieurs pools.
 
-**cepfs-mirror** : réplication des données CephFS. Disponible depuis la version Ceph Pacific.   
+**cephfs-mirror** : réplication des données CephFS. Disponible depuis la version Ceph Pacific.   
  Fonctionne seulement vers un site de secours avec la possibilité de faire un plan de reprise d'activité. Il possible de sélectionner différents répertoires avec une définition de différents règles de snapshots.
 
 **radosgw-multisites** : à compléter.
