@@ -8,7 +8,7 @@ Pour garantir une disponibilité des données, il est possible de faire de la r�
 
 Il y a un type de réplication en fonction du type de stockage :  
 
-**rbd-mirror** est disponible en deux modes :
+**[rbd-mirror](https://docs.ceph.com/en/latest/rbd/rbd-mirroring/)** est disponible en deux modes :
 Mode basé sur un _journal_ : Ce mode utilise la fonctionnalité de journalisation de l'image RBD afin de garantir une réplication. Les modifications sont appliquées en continue par relecture du journal sur le site distant. Il est possible de choisir de répliquer tout un pool ou une série d’image rbd d’un pool.  
 Mode basé sur _snapschot_ : Ce mode utilise des snapshots d'image RBD planifiés régulièrement pour répliquer des images RBD. En fonction de l’intervalle, les modifications ne sont pas présentées sur le site secondaire s’il y a un désastre sur le site primaire.  
 
@@ -17,10 +17,10 @@ Réplication unidirectionnelle : Lorsque les données sont mises en miroir uniqu
 Réplication bidirectionnelle : Lorsque les données sont mises en miroir à partir des images primaires d’un cluster vers le cluster secondaire et inversement. 
 Il n’est possible que de réaliser une réplication par sélection d’une série image RBD depuis un ou plusieurs pools.
 
-**cephfs-mirror** : réplication des données CephFS. Disponible depuis la version Ceph Pacific.   
+**[cephfs-mirror](https://docs.ceph.com/en/latest/dev/cephfs-mirroring/)** : réplication des données CephFS. Disponible depuis la version Ceph Pacific.   
  Fonctionne seulement vers un site de secours avec la possibilité de faire un plan de reprise d'activité. Il possible de sélectionner différents répertoires avec une définition de différents règles de snapshots.
 
-**radosgw-multisites** : à compléter.
+**[radosgw-multisites](https://docs.ceph.com/en/latest/radosgw/multisite-sync-policy/)** : à compléter.
 
 # Environement 
 Pour tester ces fonctions, il est nécessaire de disposer de 2 cluster Ceph.  
