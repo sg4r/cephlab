@@ -21,3 +21,8 @@ Il n’est possible que de réaliser une réplication par sélection d’une sé
  Fonctionne seulement vers un site de secours avec la possibilité de faire un plan de reprise d'activité. Il possible de sélectionner différents répertoires avec une définition de différents règles de snapshots.
 
 **radosgw-multisites** : à compléter.
+
+# Environement 
+Pour tester ces fonctions, il est nécessaire de disposer de 2 cluster Ceph.  
+Le fichier vagrant « cephmirror » est disponible dans le dossier le dossier. Avant de l’utiliser détruisez votre environnement actuel avec la commande vagrant halt et vagrant destoy. Puis remplacer avec un cluster par l’environnement cephmirror qui contient la définition de 2 clusters.  
+Le cluster A avec les nodes cna1,2,3 et le cluster B avec les nodes cnb1,2,3  et un serveur cephclt  qui serra le client pour accéder à ses 2 cluster Ceph A,B.
