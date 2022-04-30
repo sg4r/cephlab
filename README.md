@@ -34,6 +34,7 @@ Les différentes étapes :
 * [Stockage S3](cephs3.md)
 * [Ceph Dashboard](cephdashboard.md)
 * [Mise a jour](upgrade.md)
+* [Mirroring](ceph-mirror.md)
 
 ## Fin de partie
 Pour supprimer les vms ou tout simplement faire le ménage avant de refaire une configuration , utiliser vagrant pour détruire toutes les vms
