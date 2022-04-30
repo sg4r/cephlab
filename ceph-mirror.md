@@ -31,7 +31,7 @@ Le cluster A avec les nodes cna1,2,3 et le cluster B avec les nodes cnb1,2,3  et
 # arrêt et suppression de l'environement vfcephenvstart
 vagrant halt
 vagrant destroy
-# replacement de l'environement
+# remplacement de l'environement
 mv Vagrantfile vfcephenvstart
 mv vfcephenvmirror Vagrantfile
 ```
@@ -45,7 +45,7 @@ vagrant ssh cna1
 [vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl stop firewalld.service; done
 [vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl disable firewalld.service; done
 
-# connexion au deuxieme cluster B
+# connexion au deuxième cluster B
 vagrant ssh cnb1
 # configuration de tous les nodes Ceph
 [vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i dnf install -y podman lvm2; done
