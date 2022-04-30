@@ -24,5 +24,34 @@ Il n’est possible que de réaliser une réplication par sélection d’une sé
 
 # Environement 
 Pour tester ces fonctions, il est nécessaire de disposer de 2 cluster Ceph.  
-Le fichier vagrant « cephmirror » est disponible dans le dossier le dossier. Avant de l’utiliser détruisez votre environnement actuel avec la commande vagrant halt et vagrant destoy. Puis remplacer avec un cluster par l’environnement cephmirror qui contient la définition de 2 clusters.  
-Le cluster A avec les nodes cna1,2,3 et le cluster B avec les nodes cnb1,2,3  et un serveur cephclt  qui serra le client pour accéder à ses 2 cluster Ceph A,B.
+Le fichier vagrant « cephmirror » est disponible dans le dossier le dossier. Avant de l’utiliser détruisez votre environnement actuel avec la commande vagrant halt et vagrant destoy. Puis remplacer le fichier Vagrant avec l'environement cephenvmirror qui contient la définition de 2 clusters.  
+Le cluster A avec les nodes cna1,2,3 et le cluster B avec les nodes cnb1,2,3  et un serveur cephclt  qui serra le client pour accéder à ces 2 cluster Ceph A,B.
+
+```
+# arrêt et suppression de l'environement vfcephenvstart
+vagrant halt
+vagrant destroy
+# replacement de l'environement
+mv Vagrantfile vfcepenstart
+mv vfcephenvmirror Vagrantfile
+```
+
+## Création des 2 clusters A et B
+```
+# connexion au premier cluster A
+vagrant ssh cna1
+# configuration de tous les nodes Ceph
+[vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i dnf install -y podman lvm2; done
+[vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl stop firewalld.service; done
+[vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl disable firewalld.service; done
+
+# connexion au deuxieme cluster B
+vagrant ssh cnb1
+# configuration de tous les nodes Ceph
+[vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i dnf install -y podman lvm2; done
+[vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i systemctl stop firewalld.service; done
+[vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i systemctl disable firewalld.service; done
+
+# connexion a cephclt
+vagrant ssh cephclt
+```
