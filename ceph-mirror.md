@@ -101,6 +101,29 @@ TP pour la configuration de CephFS-mirroring.
 Attention les opérations sont a faire soit sur cluster A ou cluster B ou cephclt. soyez vigilant ;)
 
 ```
+[ceph: root@cna1 /]# ceph fs volume create cephfs
+[ceph: root@cna1 /]# ceph orch apply cephfs-mirror cna3
+[ceph: root@cnb1 /]# ceph fs volume create cephfs
+[ceph: root@cnb1 /]# ceph fs authorize cephfs client.mirror_remote / rwps
+[client.mirror_remote]
+	key = AQBgXWxiiR9sFBAAnHnXEJiDBn0voqY/WjnvSA==
+
+[ceph: root@cna1 /]# ceph mgr module enable mirroring
+[ceph: root@cna1 /]# ceph fs snapshot mirror enable cephfs
+{}
+
+[ceph: root@cnb1 /]# ceph mgr module enable mirroring
+[ceph: root@cnb1 /]# ceph fs snapshot mirror peer_bootstrap create cephfs client.mirror_remote remote-site
+{"token": "eyJmc2lkIjogIjEzNzc4ZDcwLWMyZjgtMTFlYy05MTVkLTUyNTQwMGE1N2Q4YSIsICJmaWxlc3lzdGVtIjogImNlcGhmcyIsICJ1c2VyIjogImNsaWVudC5taXJyb3JfcmVtb3RlIiwgInNpdGVfbmFtZSI6ICJyZW1vdGUtc2l0ZSIsICJrZXkiOiAiQVFCZ1hXeGlpUjlzRkJBQW5IblhFSmlEQm4wdm9xWS9Xam52U0E9PSIsICJtb25faG9zdCI6ICJbdjI6MTkyLjE2OC4xMTEuMjA6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIwOjY3ODkvMF0gW3YyOjE5Mi4xNjguMTExLjIxOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjI6Njc4OS8wXSJ9"}
+
+[ceph: root@cna1 /]# ceph fs snapshot mirror peer_bootstrap import cephfs eyJmc2lkIjogIjEzNzc4ZDcwLWMyZjgtMTFlYy05MTVkLTUyNTQwMGE1N2Q4YSIsICJmaWxlc3lzdGVtIjogImNlcGhmcyIsICJ1c2VyIjogImNsaWVudC5taXJyb3JfcmVtb3RlIiwgInNpdGVfbmFtZSI6ICJyZW1vdGUtc2l0ZSIsICJrZXkiOiAiQVFCZ1hXeGlpUjlzRkJBQW5IblhFSmlEQm4wdm9xWS9Xam52U0E9PSIsICJtb25faG9zdCI6ICJbdjI6MTkyLjE2OC4xMTEuMjA6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIwOjY3ODkvMF0gW3YyOjE5Mi4xNjguMTExLjIxOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjI6Njc4OS8wXSJ9
+
+[ceph: root@cna1 /]# ceph fs snapshot mirror peer_list cephfs
+{"e33a6003-038e-499f-87af-c9d1e2eea660": {"client_name": "client.mirror_remote", "site_name": "remote-site", "fs_name": "cephfs", "mon_host": "[v2:192.168.111.20:3300/0,v1:192.168.111.20:6789/0] [v2:192.168.111.21:3300/0,v1:192.168.111.21:6789/0] [v2:192.168.111.22:3300/0,v1:192.168.111.22:6789/0]"}}
+
+# remarque : c'est configuré assez facilement.
+# configuration coté client maintenant
+
 [root@cephclt ~]# yum install -y centos-release-ceph-pacific.noarch
 [root@cephclt ~]# yum install -y ceph-common
 
@@ -134,7 +157,7 @@ Attention les opérations sont a faire soit sur cluster A ou cluster B ou cephcl
 /back/rep1/file1:file1
 # ok pour rep1 il faut faire un snap pour que la copie se réalise.
 #activation de rep2
-[ceph: root@cna1 /]#  ceph fs snapshot mirror add cephfs /rep2
+[ceph: root@cna1 /]# ceph fs snapshot mirror add cephfs /rep2
 {}
 [root@cephclt ~]# grep -R . /back
 /back/rep1/file1:file1
