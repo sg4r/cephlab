@@ -32,7 +32,7 @@ Le cluster A avec les nodes cna1,2,3 et le cluster B avec les nodes cnb1,2,3  et
 vagrant halt
 vagrant destroy
 # replacement de l'environement
-mv Vagrantfile vfcepenstart
+mv Vagrantfile vfcephenvstart
 mv vfcephenvmirror Vagrantfile
 ```
 
