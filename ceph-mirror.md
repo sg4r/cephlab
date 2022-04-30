@@ -44,6 +44,26 @@ vagrant ssh cna1
 [vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i dnf install -y podman lvm2; done
 [vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl stop firewalld.service; done
 [vagrant@cna1 ~]$ for i in {1..3}; do ssh root@cna$i systemctl disable firewalld.service; done
+[vagrant@cna1 ~]$ sudo yum -y install https://download.ceph.com/rpm-16.2.7/el8/noarch/cephadm-16.2.7-0.el8.noarch.rpm
+[vagrant@cna1 ~]$ sudo cephadm bootstrap --mon-ip 192.168.111.11 --skip-monitoring-stack
+ 	     URL: https://cna1:8443/
+	     User: admin
+	Password: 039ovs9fjy => passsitea
+ #noter le pass par defaut pour le changer ensuite en passsitea
+
+[vagrant@cna1 ~]$ for i in {2..3}; do ssh-copy-id -f -i /etc/ceph/ceph.pub root@cna$i; done
+[vagrant@cna1 ~]$ for i in {2..3}; do ssh root@cna$i dnf -y install https://download.ceph.com/rpm-16.2.7/el8/noarch/cephadm-16.2.7-0.el8.noarch.rpm; done
+[vagrant@cna1 ~]$ sudo cephadm shell
+#depuis le shell du conteneur 
+ceph orch host add cna2
+ceph orch host add cna3
+ceph orch host ls
+ceph orch ls
+ceph orch device ls
+#attendre que les nodes soient dans le cluster
+ceph orch apply osd --all-available-devices
+ceph osd tree
+
 
 # connexion au deuxième cluster B
 vagrant ssh cnb1
@@ -51,6 +71,26 @@ vagrant ssh cnb1
 [vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i dnf install -y podman lvm2; done
 [vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i systemctl stop firewalld.service; done
 [vagrant@cnb1 ~]$ for i in {1..3}; do ssh root@cnb$i systemctl disable firewalld.service; done
+[vagrant@cnb1 ~]$ sudo yum -y install https://download.ceph.com/rpm-16.2.7/el8/noarch/cephadm-16.2.7-0.el8.noarch.rpm
+[vagrant@cnb1 ~]$ sudo cephadm bootstrap --mon-ip 192.168.111.20 --skip-monitoring-stack
+ 	     URL: https://cnb1:8443/
+	     User: admin
+	Password: 2f4dq012jk  => passsiteb
+ #noter le pass par defaut pour le changer ensuite en passsiteb
+
+[vagrant@cnb1 ~]$ for i in {2..3}; do ssh-copy-id -f -i /etc/ceph/ceph.pub root@cnb$i; done
+[vagrant@cnb1 ~]$ for i in {2..3}; do ssh root@cna$i dnf -y install https://download.ceph.com/rpm-16.2.7/el8/noarch/cephadm-16.2.7-0.el8.noarch.rpm; done
+[vagrant@cnb1 ~]$ sudo cephadm shell
+#depuis le shell du conteneur 
+ceph orch host add cnb2
+ceph orch host add cnb3
+ceph orch host ls
+ceph orch ls
+ceph orch device ls
+#attendre que les nodes soient dans le cluster
+ceph orch apply osd --all-available-devices
+ceph osd tree
+
 
 # connexion a cephclt
 vagrant ssh cephclt
