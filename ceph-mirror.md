@@ -258,7 +258,7 @@ https://ceph.io/en/news/blog/2021/new-in-pacific-cephfs-updates/
 https://access.redhat.com/documentation/zh-cn/red_hat_ceph_storage/5/html/file_system_guide/ceph-file-system-administration#ceph-file-system-mirroring_fs
 
 Remarques: 
-- cephfs-mirroring est stable depuis la version 16.2.5 d'apres les remarques dans les forumes
+- cephfs-mirroring est stable depuis la version 16.2.5 d'apres les remarques sur les forums
 - c'est dommange qu'il n'y a pas de mode tow-way pour gérer le changement de site comme sous rnd-mirroring
 - pas d'information de le dashbord sur ce service
 - fonctionnement simple et plutot facile a mettre en place. a noté que c'est sur sitea ou il faut installer le service cepfs-mirroring
