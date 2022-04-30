@@ -251,4 +251,8 @@ s1  s2  sitea2  siteaprod
 # voila c'est corrigé.
 # sitea est a nouveau le primaire et les snaps sont a nouveau en mirroir vers siteb
 ```
+Documentation :
 
+https://ceph.io/en/news/blog/2021/new-in-pacific-cephfs-updates/
+
+https://access.redhat.com/documentation/zh-cn/red_hat_ceph_storage/5/html/file_system_guide/ceph-file-system-administration#ceph-file-system-mirroring_fs
