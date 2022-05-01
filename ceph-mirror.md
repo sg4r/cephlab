@@ -95,9 +95,9 @@ ceph osd tree
 # connexion a cephclt
 vagrant ssh cephclt
 ```
-# mbr-mirroring
+# rbd-mirroring
 TP pour la configuration du mode two-way rbd mirroring avec un journal sur le pool data et en mode snapshot sur le pool datasp en mode image.
-la configuration est réaliser avec les commande en ligne.
+la configuration est réalisé avec les commandes en ligne.
 pour l'utilisation de la partie graphique consulter la [documentation de suse](https://documentation.suse.com/fr-fr/ses/7/html/ses-all/dashboard-rbds.html#id-1.4.3.7.11.11.5.3.2)
 ```
 
@@ -134,8 +134,6 @@ eyJmc2lkIjoiNDU2ODkxOWMtYzJmNS0xMWVjLTlkZTktNTI1NDAwNGY1NDM0IiwiY2xpZW50X2lkIjoi
 [ceph: root@cnb1 /]# echo eyJmc2lkIjoiNDU2ODkxOWMtYzJmNS0xMWVjLTlkZTktNTI1NDAwNGY1NDM0IiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFEVTFXMWlLK0tZTEJBQVhCeE0rZUQ1UHhEcS9IMDA4VjZVVnc9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjExOjMzMDAvMCx2MToxOTIuMTY4LjExMS4xMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4xMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMTI6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMTM6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjEzOjY3ODkvMF0ifQ== >token_sitea
 [ceph: root@cnb1 /]# cat token_sitea |base64 -d |jq -r .key >sitea.keyfile
 [ceph: root@cnb1 /]# remote_monsitea=$(cat token_sitea |base64 -d |jq -r .mon_host)
-[ceph: root@cnb1 /]# rbd mirror pool peer add data client.rbd-mirror-peer@sitea --remote-mon-host "$remote_monsitea" --remote-key-file sitea.keyfile --direction rx-tx
-
 [ceph: root@cnb1 /]# rbd mirror pool peer add data client.rbd-mirror-peer@sitea --remote-mon-host "$remote_monsitea" --remote-key-file sitea.keyfile --direction rx-tx
 1dc1a0e3-5f97-4e44-a535-37ab43bad7eb
 [ceph: root@cnb1 /]# rbd mirror pool info  data
@@ -293,7 +291,6 @@ Mirroring enabled
 [ceph: root@cna1 /]# echo eyJmc2lkIjoiMTM3NzhkNzAtYzJmOC0xMWVjLTkxNWQtNTI1NDAwYTU3ZDhhIiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFETjJXMWlla0V2RXhBQTNvRHNTN2p5S2lYL1R4RnpnazN3WUE9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjIwOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMDo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMTozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjE6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMjI6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIyOjY3ODkvMF0ifQ== >token_siteb
 [ceph: root@cna1 /]# cat token_siteb |base64 -d |jq -r .key >siteb.keyfile
 [ceph: root@cna1 /]# remote_monsiteb=$(cat token_siteb |base64 -d |jq -r .mon_host)
-[ceph: root@cna1 /]# rbd mirror pool peer add datasp client.rbd-mirror-peer@siteb --remote-mon-host "$remote_monsiteb" --remote-key-file siteb.keyfile --direction rx-tx
 [ceph: root@cna1 /]# rbd mirror pool peer add datasp client.rbd-mirror-peer@siteb --remote-mon-host "$remote_monsiteb" --remote-key-file siteb.keyfile --direction rx-tx
 1d61a95f-5af6-47e5-afba-d7dbf74c9302
 [ceph: root@cna1 /]# rbd mirror pool info  datasp
