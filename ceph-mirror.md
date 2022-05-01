@@ -95,6 +95,321 @@ ceph osd tree
 # connexion a cephclt
 vagrant ssh cephclt
 ```
+# mbr-mirroring
+TP pour la configuration du mode two-way rbd mirroring avec un journal sur le pool data et en mode snapshot sur le pool datasp en mode image.
+la configuration est réaliser avec les commande en ligne.
+pour l'utilisation de la partie graphique consulter la [documentation de suse](https://documentation.suse.com/fr-fr/ses/7/html/ses-all/dashboard-rbds.html#id-1.4.3.7.11.11.5.3.2)
+```
+
+[ceph: root@cna1 /]# ceph osd pool create data 16   
+pool 'data' created
+[ceph: root@cna1 /]# ceph osd pool application enable data rbd
+enabled application 'rbd' on pool 'data'
+[ceph: root@cna1 /]# rbd create imagea1 --size 1024 --pool data --image-feature exclusive-lock,journaling
+[ceph: root@cna1 /]# rbd mirror pool enable data pool
+[ceph: root@cna1 /]# rbd mirror pool info  data
+Mode: pool
+Site Name: 4568919c-c2f5-11ec-9de9-5254004f5434
+
+Peer Sites: none
+
+[ceph: root@cnb1 /]# ceph orch apply rbd-mirror --placement=cnb3
+Scheduled rbd-mirror update...
+[ceph: root@cnb1 /]# ceph osd pool create data 16   
+pool 'data' created
+[ceph: root@cnb1 /]# ceph osd pool application enable data rbd
+enabled application 'rbd' on pool 'data'
+[ceph: root@cnb1 /]# rbd mirror pool enable data pool
+[ceph: root@cnb1 /]# rbd mirror pool info  dataMode: pool
+Site Name: 13778d70-c2f8-11ec-915d-525400a57d8a
+
+Peer Sites: none
+
+
+[ceph: root@cna1 /]# rbd mirror pool peer bootstrap create --site-name sitea data > token_sitea
+[ceph: root@cna1 /]# cat token_sitea
+eyJmc2lkIjoiNDU2ODkxOWMtYzJmNS0xMWVjLTlkZTktNTI1NDAwNGY1NDM0IiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFEVTFXMWlLK0tZTEJBQVhCeE0rZUQ1UHhEcS9IMDA4VjZVVnc9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjExOjMzMDAvMCx2MToxOTIuMTY4LjExMS4xMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4xMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMTI6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMTM6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjEzOjY3ODkvMF0ifQ==
+
+
+[ceph: root@cnb1 /]# echo eyJmc2lkIjoiNDU2ODkxOWMtYzJmNS0xMWVjLTlkZTktNTI1NDAwNGY1NDM0IiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFEVTFXMWlLK0tZTEJBQVhCeE0rZUQ1UHhEcS9IMDA4VjZVVnc9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjExOjMzMDAvMCx2MToxOTIuMTY4LjExMS4xMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4xMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMTI6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMTM6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjEzOjY3ODkvMF0ifQ== >token_sitea
+[ceph: root@cnb1 /]# cat token_sitea |base64 -d |jq -r .key >sitea.keyfile
+[ceph: root@cnb1 /]# remote_monsitea=$(cat token_sitea |base64 -d |jq -r .mon_host)
+[ceph: root@cnb1 /]# rbd mirror pool peer add data client.rbd-mirror-peer@sitea --remote-mon-host "$remote_monsitea" --remote-key-file sitea.keyfile --direction rx-tx
+
+[ceph: root@cnb1 /]# rbd mirror pool peer add data client.rbd-mirror-peer@sitea --remote-mon-host "$remote_monsitea" --remote-key-file sitea.keyfile --direction rx-tx
+1dc1a0e3-5f97-4e44-a535-37ab43bad7eb
+[ceph: root@cnb1 /]# rbd mirror pool info  data
+Mode: pool
+Site Name: 13778d70-c2f8-11ec-915d-525400a57d8a
+
+Peer Sites: 
+
+UUID: 1dc1a0e3-5f97-4e44-a535-37ab43bad7eb
+Name: sitea
+Mirror UUID: 
+Direction: rx-tx
+Client: client.rbd-mirror-peer
+
+[ceph: root@cnb1 /]# rbd mirror pool peer bootstrap create --site-name siteb data > token_siteb
+[ceph: root@cnb1 /]# cat token_siteb
+eyJmc2lkIjoiMTM3NzhkNzAtYzJmOC0xMWVjLTkxNWQtNTI1NDAwYTU3ZDhhIiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFETjJXMWlla0V2RXhBQTNvRHNTN2p5S2lYL1R4RnpnazN3WUE9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjIwOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMDo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMTozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjE6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMjI6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIyOjY3ODkvMF0ifQ==
+
+[ceph: root@cna1 /]# echo eyJmc2lkIjoiMTM3NzhkNzAtYzJmOC0xMWVjLTkxNWQtNTI1NDAwYTU3ZDhhIiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFETjJXMWlla0V2RXhBQTNvRHNTN2p5S2lYL1R4RnpnazN3WUE9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjIwOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMDo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMTozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjE6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMjI6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIyOjY3ODkvMF0ifQ== >token_siteb
+
+[ceph: root@cna1 /]# ceph orch apply rbd-mirror --placement=cna3
+Scheduled rbd-mirror update...
+[ceph: root@cna1 /]# cat token_siteb |base64 -d |jq -r .key >siteb.keyfile
+[ceph: root@cna1 /]# remote_monsiteb=$(cat token_siteb |base64 -d |jq -r .mon_host)
+[ceph: root@cna1 /]# rbd mirror pool peer add data client.rbd-mirror-peer@siteb --remote-mon-host "$remote_monsiteb" --remote-key-file siteb.keyfile --direction rx-tx
+f686c18f-412a-4864-a4fa-bd812b0714ef
+[ceph: root@cna1 /]#  rbd mirror pool info  data
+Mode: pool
+Site Name: sitea
+
+Peer Sites: 
+
+UUID: f686c18f-412a-4864-a4fa-bd812b0714ef
+Name: siteb
+Mirror UUID: 
+Direction: rx-tx
+Client: client.rbd-mirror-peer
+
+
+[ceph: root@cna1 /]# rbd  mirror pool status data   
+health: OK
+daemon health: OK
+image health: OK
+images: 1 total
+    1 replaying
+
+
+# ok la réplication est activé.
+# partie cephclt pour consommer les ressources
+
+[root@cephclt ~]# sudo yum -y install centos-release-ceph-pacific.noarch
+[root@cephclt ~]# sudo yum -y install ceph-common
+[root@cephclt ~]# sudo yum -y install rbd-nbd
+
+[vagrant@cna1 ~]$ sudo cephadm shell cat /etc/ceph/ceph.conf >sitea.conf
+[vagrant@cna1 ~]$ sudo cephadm shell ceph auth get client.rbd-mirror-peer >sitea.client.rbd-mirror-peer.keyring
+exported keyring for client.rbd-mirror-peer
+[vagrant@cna1 ~]$ scp sitea* root@cephclt:/etc/ceph
+sitea.client.rbd-mirror-peer.keyring                                                       100%  137   138.5KB/s   00:00    
+sitea.conf                                                                                 100%  283   221.0KB/s   00:00    
+[vagrant@cna1 ~]$ 
+
+vagrant@cnb1 ~]$ sudo cephadm shell cat /etc/ceph/ceph.conf >siteb.conf
+[vagrant@cnb1 ~]$ sudo cephadm shell ceph auth get client.rbd-mirror-peer >siteb.client.rbd-mirror-peer.keyring
+exported keyring for client.rbd-mirror-peer
+[vagrant@cnb1 ~]$ scp siteb* root@cephclt:/etc/ceph
+siteb.client.rbd-mirror-peer.keyring                                                   100%  137   157.8KB/s   00:00    
+siteb.conf                                                                             100%  283   419.3KB/s   00:00    
+[vagrant@cnb1 ~]$ 
+
+# vérification qui est primaire ?
+[vagrant@cephclt ~]$ rbd --cluster sitea --id rbd-mirror-peer info data/imagea1 |grep primary
+	mirroring primary: true
+[vagrant@cephclt ~]$ rbd --cluster siteb --id rbd-mirror-peer info data/imagea1 |grep primary
+	mirroring primary: false
+
+# sitea est bien primaire
+
+[root@cephclt ~]# rbd-nbd --cluster sitea --id rbd-mirror-peer map data/imagea1
+/dev/nbd0
+[root@cephclt ~]# mkfs.xfs /dev/nbd0
+Discarding blocks...Done.
+[root@cephclt ~]# mkdir /work
+[root@cephclt ~]# mount /dev/nbd0 /work
+[root@cephclt ~]# echo "depuis sitea" > /work/prod.txt
+[root@cephclt ~]# umount /work/
+[root@cephclt ~]# rbd-nbd unmap /dev/nbd0
+
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer mirror pool demote data
+Demoted 1 mirrored images
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer mirror pool promote data
+Promoted 1 mirrored images
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer info data/imagea1 |grep primary
+	mirroring primary: false
+[root@cephclt ~]# rbd-nbd --cluster siteb --id rbd-mirror-peer map data/imagea1
+/dev/nbd0
+[root@cephclt ~]# mount /dev/nbd0 /work
+[root@cephclt ~]# cat /work/prod.txt 
+depuis sitea
+[root@cephclt ~]# echo "PRA depuis siteb" >>/work/prod.txt
+[root@cephclt ~]# cat /work/prod.txt 
+depuis sitea
+PRA depuis siteb
+[root@cephclt ~]# umount /work
+[root@cephclt ~]# rbd-nbd unmap /dev/nbd0
+
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer mirror pool demote data
+Demoted 1 mirrored images
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer mirror pool promote data
+Promoted 1 mirrored images
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer info data/imagea1 |grep primary
+	mirroring primary: true
+[root@cephclt ~]# rbd-nbd --cluster sitea --id rbd-mirror-peer map data/imagea1
+/dev/nbd0
+[root@cephclt ~]# mount /dev/nbd0 /work
+[root@cephclt ~]# cat /work/prod.txt 
+depuis sitea
+PRA depuis siteb
+[root@cephclt ~]# echo "retour prod sitea" >>/work/prod.txt 
+[
+# passage au siteb primaire puis rebasculement vers le sitea, ca fonctionne
+# ajouter une nouvelle image dans le pool et verifier quelle soit prise en compte lors du demote et du promote
+
+[ceph: root@cna1 /]# rbd create imagea2 --size 1024 --pool data --image-feature exclusive-lock,journaling
+
+
+# création une réplication par snap
+
+[ceph: root@cna1 /]# ceph osd pool create datasp 16       
+pool 'datasp' created
+[ceph: root@cna1 /]# ceph osd pool application enable datasp rbd
+enabled application 'rbd' on pool 'datasp'
+[ceph: root@cna1 /]# rbd create imagesp1 --size 1024 --pool datasp --image-feature exclusive-lock,object-map,fast-diff
+[ceph: root@cna1 /]# rbd mirror pool enable datasp image
+[ceph: root@cna1 /]# rbd mirror image enable datasp/imagesp1 snapshot
+Mirroring enabled
+
+[ceph: root@cnb1 /]# ceph osd pool create datasp 16       
+pool 'datasp' created
+[ceph: root@cnb1 /]# ceph osd pool application enable datasp rbd
+enabled application 'rbd' on pool 'datasp'
+[ceph: root@cnb1 /]# rbd create imagesp2 --size 1024 --pool datasp --image-feature exclusive-lock,object-map,fast-diff
+
+[ceph: root@cnb1 /]# rbd mirror pool enable datasp image
+[ceph: root@cnb1 /]# rbd mirror image enable datasp/imagesp2 snapshot
+Mirroring enabled
+[ceph: root@cnb1 /]# rbd mirror snapshot schedule add --pool datasp 5m
+
+[ceph: root@cnb1 /]# echo eyJmc2lkIjoiNDU2ODkxOWMtYzJmNS0xMWVjLTlkZTktNTI1NDAwNGY1NDM0IiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFEVTFXMWlLK0tZTEJBQVhCeE0rZUQ1UHhEcS9IMDA4VjZVVnc9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjExOjMzMDAvMCx2MToxOTIuMTY4LjExMS4xMTo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4xMjozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMTI6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMTM6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjEzOjY3ODkvMF0ifQ== >token_sitea
+[ceph: root@cnb1 /]# cat token_sitea |base64 -d |jq -r .key >sitea.keyfile
+[ceph: root@cnb1 /]# remote_monsitea=$(cat token_sitea |base64 -d |jq -r .mon_host)
+[ceph: root@cnb1 /]# rbd mirror pool peer add datasp client.rbd-mirror-peer@sitea --remote-mon-host "$remote_monsitea" --remote-key-file sitea.keyfile --direction rx-tx
+13751254-a489-49e2-928d-6309e1a4e266
+
+[ceph: root@cna1 /]# echo eyJmc2lkIjoiMTM3NzhkNzAtYzJmOC0xMWVjLTkxNWQtNTI1NDAwYTU3ZDhhIiwiY2xpZW50X2lkIjoicmJkLW1pcnJvci1wZWVyIiwia2V5IjoiQVFETjJXMWlla0V2RXhBQTNvRHNTN2p5S2lYL1R4RnpnazN3WUE9PSIsIm1vbl9ob3N0IjoiW3YyOjE5Mi4xNjguMTExLjIwOjMzMDAvMCx2MToxOTIuMTY4LjExMS4yMDo2Nzg5LzBdIFt2MjoxOTIuMTY4LjExMS4yMTozMzAwLzAsdjE6MTkyLjE2OC4xMTEuMjE6Njc4OS8wXSBbdjI6MTkyLjE2OC4xMTEuMjI6MzMwMC8wLHYxOjE5Mi4xNjguMTExLjIyOjY3ODkvMF0ifQ== >token_siteb
+[ceph: root@cna1 /]# cat token_siteb |base64 -d |jq -r .key >siteb.keyfile
+[ceph: root@cna1 /]# remote_monsiteb=$(cat token_siteb |base64 -d |jq -r .mon_host)
+[ceph: root@cna1 /]# rbd mirror pool peer add datasp client.rbd-mirror-peer@siteb --remote-mon-host "$remote_monsiteb" --remote-key-file siteb.keyfile --direction rx-tx
+[ceph: root@cna1 /]# rbd mirror pool peer add datasp client.rbd-mirror-peer@siteb --remote-mon-host "$remote_monsiteb" --remote-key-file siteb.keyfile --direction rx-tx
+1d61a95f-5af6-47e5-afba-d7dbf74c9302
+[ceph: root@cna1 /]# rbd mirror pool info  datasp
+Mode: image
+Site Name: sitea
+
+Peer Sites: 
+
+UUID: 1d61a95f-5af6-47e5-afba-d7dbf74c9302
+Name: siteb
+Mirror UUID: 1c826a26-9f24-40e7-8778-1becb9c0ce75
+Direction: rx-tx
+Client: client.rbd-mirror-peer
+[ceph: root@cna1 /]# rbd mirror snapshot schedule add --pool datasp 5m
+[ceph: root@cna1 /]# rbd mirror image enable datasp/imagesp1 snapshot
+Mirroring enabled
+[ceph: root@cna1 /]# rbd  mirror pool status datasp   
+health: OK
+daemon health: OK
+image health: OK
+images: 2 total
+    2 replaying
+
+[ceph: root@cna1 /]#  rbd mirror image status datasp/imagesp1
+imagesp1:
+  global_id:   9e50cadc-b357-4a48-b9f6-0e1165190d66
+  state:       up+stopped
+  description: local image is primary
+  service:     cna3.psloxz on cna3
+  last_update: 2022-05-01 02:00:22
+  peer_sites:
+    name: siteb
+    state: up+replaying
+    description: replaying, {"bytes_per_second":0.0,"bytes_per_snapshot":0.0,"remote_snapshot_timestamp":1651370401,"replay_state":"idle"}
+    last_update: 2022-05-01 02:00:14
+  snapshots:
+    6 .mirror.primary.9e50cadc-b357-4a48-b9f6-0e1165190d66.aeb73b70-ae07-4db1-9243-f1b5da8d6134 (peer_uuids:[1d61a95f-5af6-47e5-afba-d7dbf74c9302])
+    10 .mirror.primary.9e50cadc-b357-4a48-b9f6-0e1165190d66.11d381f0-cbb6-4490-ae23-aac38f268c9b (peer_uuids:[1d61a95f-5af6-47e5-afba-d7dbf74c9302])
+
+[ceph: root@cna1 /]#  rbd  info datasp/imagesp1
+rbd image 'imagesp1':
+	size 1 GiB in 256 objects
+	order 22 (4 MiB objects)
+	snapshot_count: 2
+	id: aeadaed1be90
+	block_name_prefix: rbd_data.aeadaed1be90
+	format: 2
+	features: exclusive-lock, object-map, fast-diff
+	op_features: 
+	flags: 
+	create_timestamp: Sun May  1 01:33:56 2022
+	access_timestamp: Sun May  1 01:33:56 2022
+	modify_timestamp: Sun May  1 01:33:56 2022
+	mirroring state: enabled
+	mirroring mode: snapshot
+	mirroring global id: 9e50cadc-b357-4a48-b9f6-0e1165190d66
+	mirroring primary: true
+[ceph: root@cna1 /]# 
+
+# datasp/imagesp1 est primaire sur sitea
+
+
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer info datasp/imagesp1 |grep primary
+	mirroring primary: true
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer info datasp/imagesp2 |grep primary
+	features: exclusive-lock, object-map, fast-diff, non-primary
+	mirroring primary: false
+	
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer device map  datasp/imagesp1 
+/dev/rbd0
+[root@cephclt ~]# mkfs.xfs /dev/rbd0
+Discarding blocks...Done.
+[root@cephclt ~]# mount /dev/rbd0 /work
+[root@cephclt ~]# echo sitea prod > /work/prod
+[root@cephclt ~]# umount /work
+
+
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer device unmap  /dev/rbd0
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer mirror image demote datasp/imagesp1
+Image demoted to non-primary
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer mirror image promote datasp/imagesp1
+Image promoted to primary
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer device map datasp/imagesp1
+/dev/rbd0
+[root@cephclt ~]# mount /dev/rbd0 /work
+[root@cephclt ~]# cat /work/prod 
+sitea prod
+[root@cephclt ~]# echo siteb prod >>/work/prod 
+[root@cephclt ~]# umount /work
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer device unmap /dev/rbd0
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer mirror image demote datasp/imagesp1
+Image demoted to non-primary
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer mirror image promote datasp/imagesp1
+Image promoted to primary
+[root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer device map datasp/imagesp1
+/dev/rbd0
+[root@cephclt ~]# mount /dev/rbd0 /work
+[root@cephclt ~]# cat /work/prod 
+sitea prod
+siteb prod
+[root@cephclt ~]# 
+
+
+
+# retour au sitea en prod.
+
+# faire la même chose avec imagesp2
+```
+
+### Documentation
+https://docs.ceph.com/en/latest/rbd/rbd-mirroring/
+
+### Remarque : 
+Il est possible d'utiliser le dashbord pour faire la configuration des comptes de mirroring.
+par contre quand on rajout un nouveau pool, il faut refaire l'ensemble des comptes de mirroring
+
 
 # CephFS-mirroring
 TP pour la configuration de CephFS-mirroring.  
