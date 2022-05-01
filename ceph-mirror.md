@@ -409,6 +409,11 @@ https://docs.ceph.com/en/latest/rbd/rbd-mirroring/
 ### Remarque : 
 Il est possible d'utiliser le dashbord pour faire la configuration des comptes de mirroring.
 par contre quand on rajout un nouveau pool, il faut refaire l'ensemble des comptes de mirroring
+### Copie d'ecran :
+Voici le résultat via le Dashboard.
+![rbd-mirroring-sitea.png](rbd-mirroring-sitea.png)
+![rbd-mirroring-siteb.png](rbd-mirroring-siteb.png)
+
 
 
 # CephFS-mirroring
