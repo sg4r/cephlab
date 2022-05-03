@@ -228,6 +228,8 @@ Demoted 1 mirrored images
 Promoted 1 mirrored images
 [root@cephclt ~]# rbd --cluster sitea --id rbd-mirror-peer info data/imagea1 |grep primary
 	mirroring primary: false
+[root@cephclt ~]# rbd --cluster siteb --id rbd-mirror-peer info data/imagea1 |grep primary
+	mirroring primary: true
 [root@cephclt ~]# rbd-nbd --cluster siteb --id rbd-mirror-peer map data/imagea1
 /dev/nbd0
 [root@cephclt ~]# mount /dev/nbd0 /work
