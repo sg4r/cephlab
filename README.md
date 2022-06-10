@@ -1,15 +1,36 @@
 # Cephlab
 Ce lab virtuel Vagrant contient un environnement pour installer et configurer un cluster Ceph en version octopus en quelques étapes accompagné de commentaires pour vous guider à chaque étape. ces informations ne sont pas une procédure d'installation automatisée pour une utilisation en production. Vous trouverez les différentes étapes configurer les services RBD, CEPFS, S3, un Dashboard avec prometheus et grafana, ainsi que la mise en HA de 2 RGW. 
-## Installation de vagrant et libvirt sur votre poste Ubuntu
+## Installation de vagrant pour un poste Linux
+cephlab est supporté avec libvirt ou virtualbox. En fonction de votre environement de virtualisation il faudra installer vagrant puis virt-manager ou virtualbox et définir le bon provider dans le fichier Vagrantfile.  
+Installation de vagrant :
 ```
+# Pour debian/ubuntu
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install vagrant
+# Pour redhat/oraclelinux/centos
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo yum -y install vagrant
+```
+Install virt-manager
+```
+# Pour debian/ubuntu
 sudo apt-get install virt-manager
-sudo apt install vagrant
+# Pour redhat/oraclelinux/centos
+sudo yum install virt-manager
 ```
+Installtion de virtualbox  
+Pour l'installtion de virtualb, se référer a la https://www.virtualbox.org/
+
 ## Clone cephlab
 ```
 git clone https://github.com/sg4r/cephlab.git
 cd cephlab
 ```
+## Définir votre provider pour Vagrant
+Editer le fichier Vagrantfile et selectionner le provider situé en début du fichier en fonction de votre environement de virtualisation et commenter la ligne avec le provider non utilisé.
+
 ## Start lab
 ```
 #start all Vms 
