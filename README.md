@@ -21,7 +21,7 @@ sudo apt-get install virt-manager
 sudo yum install virt-manager
 ```
 Installtion de virtualbox  
-Pour l'installtion de virtualb, se référer a la https://www.virtualbox.org/
+Pour l'installtion de virtualbox, se référer à la documentation https://www.virtualbox.org/
 
 ## Clone cephlab
 ```
