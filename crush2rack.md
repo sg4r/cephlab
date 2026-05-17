@@ -1,14 +1,18 @@
-# Changement de configuration pour passer de 3rack à 2rack
+# TP 3 racks vers 2 racks
+Exemple de commandes pour passer d'une structure en 3 racks et 2 racks.
+
 ```
+# Changement de configuration pour passer de 3rack à 2rack
+
 ceph osd crush move cn1 rack=rack1
 ceph osd crush move cn2 rack=rack1
 ceph osd crush move cn3 rack=rack1
 ceph osd crush move cn4 rack=rack2
 ceph osd crush move cn5 rack=rack2
 ceph osd crush move cn6 rack=rack2
-```
+
 # Nouvelle structure
-```
+
 [root@cephclt ~]# ceph osd tree
 ID   CLASS  WEIGHT   TYPE NAME           STATUS  REWEIGHT  PRI-AFF
  -1         0.52734  root default                                 
