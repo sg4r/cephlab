@@ -76,6 +76,6 @@ Les évolutions concernant ce lab sont :
 - Réplication multi-sites S3
 - [Convertir un cluster Ceph existant](upgrade.nautilus2octopus.md)
 - [Exemple d'installation avec ceph-ansible](cephansible.md)
-- [Exemple de configuration avec 3 racks](cruh3rack.md)
+- [Exemple de configuration avec 3 racks](crush3rack.md)
 - [Exemple de configuration pour migrer de 3 racks à 2 racks](crush2rack.md)
   
